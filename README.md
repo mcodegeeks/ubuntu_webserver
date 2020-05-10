@@ -1,5 +1,8 @@
 # Ubuntu WebServer
 Practice Ubuntu Webserver on Amazon Lightsail Cloud
+```
+$ git clone https://github.com/mcodegeeks/ubuntu_webserver.git
+```
 
 # Essential Setup for Ubuntu
 - Updating SSH config for keeping client connection
@@ -7,6 +10,5 @@ Practice Ubuntu Webserver on Amazon Lightsail Cloud
 - Updating time zone (America/Toronto)
 - Enabling swap file
 ```
-$ git clone https://github.com/mcodegeeks/ubuntu_webserver.git
-$ sudo ~/ubuntu_webserver/setup_ubuntu.sh 
+$ sudo ubuntu_webserver/setup_ubuntu.sh 
 ```
