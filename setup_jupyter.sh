@@ -7,7 +7,7 @@ JUPYTER_CFG="/home/ubuntu/.jupyter/jupyter_notebook_config.py"
 JUPYTER_PASSWD=$1
 
 source helper_functions.sh
-#checkScriptPermission
+checkScriptPermission
 
 while [ -z "$JUPYTER_PASSWD" ]
 do
@@ -16,13 +16,13 @@ do
 done
 
 echo "Updating software repositories..."
-#apt-get -y update
+apt-get -y update
 echo "Done!"
 
 echo ""
 
 echo "Installing python package manager..."
-#sudo apt-get -y install python3-pip
+sudo apt-get -y install python3-pip
 echo "Done!"
 
 echo ""
