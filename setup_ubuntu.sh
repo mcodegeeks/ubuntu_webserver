@@ -1,11 +1,5 @@
 #!/bin/bash
 
-ROOT_UID=0
-if [ ! $UID -eq $ROOT_UID ]; then
-    echo "Execute this shell script with SUDO privilege!"
-    exit 0
-fi
-
 SSH_KEY="id_rsa"
 SSH_DIR="/${USER}/.ssh"
 SSH_CFG="/etc/ssh/sshd_config"
@@ -14,6 +8,7 @@ SWAP_FILE="/var/swapfile"
 FSTAB_FILE="/etc/fstab"
 
 source helper_functions.sh
+checkScriptPermission
 
 echo "Updating SSH config..."
 updateConfig $SSH_CFG 'ClientAliveInterval' 60

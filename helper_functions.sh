@@ -1,3 +1,11 @@
+function checkScriptPermission() {
+    local ROOT_UID=0
+    if [ ! $UID -eq $ROOT_UID ]; then
+        echo "Execute this shell script with SUDO privilege!"
+        exit 0
+    fi
+}
+
 function readConfig() {
     local file=$1
     local key=$2
