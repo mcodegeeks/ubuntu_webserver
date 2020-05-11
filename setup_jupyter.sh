@@ -1,13 +1,13 @@
 #!/bin/bash
+source helper_functions.sh
+is_sudo_exec
 
-#HOST_ADDR=$(hostname -I | awk '{print $1}')
+HOST_ADDR=$(hostname -I | awk '{print $1}')
 SSL_DIR="/tmp/.ssh"
 PY_TEMP="/tmp/temp.py"
 JUPYTER_CFG="/home/ubuntu/.jupyter/jupyter_notebook_config.py"
+JUPYTER_CFG="/Users/ym186017/.jupyter/jupyter_notebook_config.py"
 JUPYTER_PASSWD=$1
-
-source helper_functions.sh
-checkScriptPermission
 
 while [ -z "$JUPYTER_PASSWD" ]
 do
@@ -46,26 +46,20 @@ echo ""
 
 echo "Creating SSL key-pair..."
 mkdir -p $SSL_DIR
-sudo openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout "$SSL_DIR/cert.key" -out "$SSL_DIR/cert.pem" -batch
+openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout "${SSL_DIR}/cert.key" -out "${SSL_DIR}/cert.pem" -batch
 echo "Done!"
 
+echo ""
 
+echo "Creating Jupyter Defailt Config..."
+#jupyter notebook --generate -y
+echo "Done!"
+echo "Updating Jupyter Defailt Config (${JUPYTER_CFG})..."
+cp $JUPYTER_CFG $PY_TEMP
+upsert_line $PY_TEMP "c.NotebookApp.password" $SHA1 ' = '
+upsert_line $PY_TEMP "c.NotebookApp.ip" $HOST_ADDR ' = '
+upsert_line $PY_TEMP "c.NotebookApp.notebook_dir" $JUPYTER_CFG ' = '
+upsert_line $PY_TEMP "c.NotebookApp.certfile" "${SSL_DIR}/cert.pem" ' = '
+upsert_line $PY_TEMP "c.NotebookApp.keyfile" "${SSL_DIR}/cert.key" ' = '
+echo "Done!"
 
-
-
-
-
-
-
-
-#HOST_IP_ADDRESS=
-#JUPYTER_CONFIG='/home/ubuntu/.jupyter/jupyter_notebook_config.py'
-#JUPYTER_SERVICE='/etc/systemd/system/jupyter.service'
-#TEMP_PY_FILE='/tmp/temp.py'
-#SSL_DIR='/home/ubuntu/.ssh'
-
-#if [ -z "$1" ]
-#  then
-#    USER_PASSWORD="password"
-#    printf "User password input is recommened!!! (Default Password: %s)\n" $USER_PASSWORD
-#fi

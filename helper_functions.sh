@@ -1,41 +1,24 @@
-function checkScriptPermission() {
+function is_sudo_exec() {
     local ROOT_UID=0
     if [ ! $UID -eq $ROOT_UID ]; then
-        echo "Execute this shell script with SUDO privilege!"
+        echo "Please, execute this shell script with SUDO privilege!"
         exit 0
     fi
 }
 
-function readConfig() {
-    local file=$1
-    local key=$2
-
-    grep ".*${key}[ \t][ \t]*.*" $file | cut -d ' ' -f2
-}
-
-function writeConfig() {
+function upsert_line() {
     local file=$1
     local key=$2
     local val=$3
+    local delim=$4
+    local line=$(grep ".*${key}[[:space:]]*${delim}" $file)
 
-    grep ".*${key}[ \t][ \t]*.*" $file > /dev/null
-    if [ ! "$?" -eq 0 ]; then
-        echo "${key} ${val}" | tee -a $file > /dev/null
+    if [[ -z $line ]]; then
+        echo "(+) ${key}${delim}${val}"
+        echo "${key}${delim}${val}" | tee -a $file > /dev/null
     else
-       sed -ie "s/.*${key}[ \t][ \t]*.*/${key} ${val}/g" $file
-    fi
-}
-
-function updateConfig() {
-    local file=$1
-    local key=$2
-    local newVal=$3
-    local oldVal=$(readConfig $file $key)
-    if [ ! $newVal -eq $oldVal ]; then
-        writeConfig $file $key $newVal
-        newVal=$(readConfig $file $key)
-        echo "ClientAliveInterval: ${newVal} (was ${oldVal})"
-    else
-        echo "ClientAliveInterval: ${oldVal}"
+        echo "(-) $line"
+        echo "(+) ${key}${delim}${val}"
+        sed -ie "s|.*${key}[[:space:]]*${delim}.*|${key}${delim}${val}|" $file
     fi
 }

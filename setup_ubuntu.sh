@@ -1,4 +1,6 @@
 #!/bin/bash
+source helper_functions.sh
+is_sudo_exec
 
 SSH_KEY="id_rsa"
 SSH_DIR="/${USER}/.ssh"
@@ -7,11 +9,8 @@ TIME_ZONE="America/Toronto"
 SWAP_FILE="/var/swapfile"
 FSTAB_FILE="/etc/fstab"
 
-source helper_functions.sh
-checkScriptPermission
-
-echo "Updating SSH config..."
-updateConfig $SSH_CFG 'ClientAliveInterval' 60
+echo "Updating SSH config (${SSH_CFG})..."
+upsert_line $SSH_CFG 'ClientAliveInterval' 60 ' '
 echo "Done!"
 
 echo "Restarting SSH demon..."
