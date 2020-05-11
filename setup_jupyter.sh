@@ -6,7 +6,6 @@ HOST_ADDR=$(hostname -I | awk '{print $1}')
 SSL_DIR="/tmp/.ssh"
 PY_TEMP="/tmp/temp.py"
 JUPYTER_CFG="/home/ubuntu/.jupyter/jupyter_notebook_config.py"
-JUPYTER_CFG="/Users/ym186017/.jupyter/jupyter_notebook_config.py"
 JUPYTER_PASSWD=$1
 
 while [ -z "$JUPYTER_PASSWD" ]
