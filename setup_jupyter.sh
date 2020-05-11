@@ -21,7 +21,7 @@ echo "Done!"
 echo ""
 
 echo "Installing python package manager..."
-sudo apt-get -y install python3-pip
+apt-get -y install python3-pip
 echo "Done!"
 
 echo ""
@@ -51,14 +51,14 @@ echo "Done!"
 echo ""
 
 echo "Creating Jupyter Defailt Config..."
-#jupyter notebook --generate -y
+jupyter notebook --generate -y
 echo "Done!"
+
 echo "Updating Jupyter Defailt Config (${JUPYTER_CFG})..."
-cp $JUPYTER_CFG $PY_TEMP
-upsert_line $PY_TEMP "c.NotebookApp.password" $SHA1 ' = '
-upsert_line $PY_TEMP "c.NotebookApp.ip" $HOST_ADDR ' = '
-upsert_line $PY_TEMP "c.NotebookApp.notebook_dir" $JUPYTER_CFG ' = '
-upsert_line $PY_TEMP "c.NotebookApp.certfile" "${SSL_DIR}/cert.pem" ' = '
-upsert_line $PY_TEMP "c.NotebookApp.keyfile" "${SSL_DIR}/cert.key" ' = '
+upsert_line $JUPYTER_CFG "c.NotebookApp.password" $SHA1 ' = '
+upsert_line $JUPYTER_CFG "c.NotebookApp.ip" $HOST_ADDR ' = '
+upsert_line $JUPYTER_CFG "c.NotebookApp.notebook_dir" $JUPYTER_CFG ' = '
+upsert_line $JUPYTER_CFG "c.NotebookApp.certfile" "${SSL_DIR}/cert.pem" ' = '
+upsert_line $JUPYTER_CFG "c.NotebookApp.keyfile" "${SSL_DIR}/cert.key" ' = '
 echo "Done!"
 
