@@ -3,7 +3,7 @@ source helper_functions.sh
 is_sudo_exec
 
 HOST_ADDR=$(hostname -I | awk '{print $1}')
-SSL_DIR="/tmp/.ssh"
+SSL_DIR="/${USER}/.ssh"
 PY_TEMP="/tmp/temp.py"
 JUPYTER_CFG="/home/ubuntu/.jupyter/jupyter_notebook_config.py"
 JUPYTER_PASSWD=$1
