@@ -30,3 +30,11 @@ $ cat ~/.ssh/id_rsa.pub | ssh -i <aws_generated_key>.pem ubuntu@<domain> 'tee -a
 ```
 $ ssh ubuntu@<domain>
 ```
+
+## Install Jupyter (Optional)
+```
+$ sudo ubuntu_webserver/setup_jupyter.sh <password>
+```
+```
+https://<domain>:88888
+```
