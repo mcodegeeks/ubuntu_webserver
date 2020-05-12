@@ -56,11 +56,11 @@ jupyter notebook --generate -y
 echo "Done!"
 
 echo "Updating Jupyter Defailt Config (${JUPYTER_CFG})..."
-upsert_line $JUPYTER_CFG "c.NotebookApp.password" $SHA1 ' = '
-upsert_line $JUPYTER_CFG "c.NotebookApp.ip" $HOST_ADDR ' = '
-upsert_line $JUPYTER_CFG "c.NotebookApp.notebook_dir" '/' ' = '
-#upsert_line $JUPYTER_CFG "c.NotebookApp.certfile" "${SSL_DIR}/cert.pem" ' = '
-#upsert_line $JUPYTER_CFG "c.NotebookApp.keyfile" "${SSL_DIR}/cert.key" ' = '
+upsert_line $JUPYTER_CFG "c.NotebookApp.password" "u'{$SHA1}'" ' = '
+upsert_line $JUPYTER_CFG "c.NotebookApp.ip" "'${HOST_ADDR}'" ' = '
+upsert_line $JUPYTER_CFG "c.NotebookApp.notebook_dir" "'/'" ' = '
+#upsert_line $JUPYTER_CFG "c.NotebookApp.certfile" "u'${SSL_DIR}/cert.pem'" ' = '
+#upsert_line $JUPYTER_CFG "c.NotebookApp.keyfile" "u'${SSL_DIR}/cert.key'" ' = '
 echo "Done!"
 
 echo ""
