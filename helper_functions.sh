@@ -11,8 +11,13 @@ function upsert_line() {
     local key=$2
     local val=$3
     local delim=$4
-    local line=$(grep ".*${key}[[:space:]]*${delim}" $file)
+    local line=""
 
+    if [[ ! -f $file ]]; then
+        touch $file
+    fi
+
+    line=$(grep ".*${key}[[:space:]]*${delim}" $file)
     if [[ -z $line ]]; then
         echo "(+) ${key}${delim}${val}"
         echo "${key}${delim}${val}" | tee -a $file > /dev/null
@@ -21,4 +26,16 @@ function upsert_line() {
         echo "(+) ${key}${delim}${val}"
         sed -ie "s|.*${key}[[:space:]]*${delim}.*|${key}${delim}${val}|" $file
     fi
+}
+
+function append_line() {
+    local file=$1
+    local val=$2
+
+    if [[ ! -f $file ]]; then
+        touch $file
+    fi
+
+    echo "(+) ${val}"
+    echo "${val}" | tee -a $file > /dev/null
 }

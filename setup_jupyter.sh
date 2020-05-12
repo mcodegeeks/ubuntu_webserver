@@ -6,6 +6,7 @@ HOST_ADDR=$(hostname -I | awk '{print $1}')
 SSL_DIR="/${USER}/.ssh"
 PY_TEMP="/tmp/temp.py"
 JUPYTER_CFG="/home/ubuntu/.jupyter/jupyter_notebook_config.py"
+JUPYTER_SERVICE="/etc/systemd/system/jupyter.service"
 JUPYTER_PASSWD=$1
 
 while [ -z "$JUPYTER_PASSWD" ]
@@ -62,3 +63,21 @@ upsert_line $JUPYTER_CFG "c.NotebookApp.certfile" "${SSL_DIR}/cert.pem" ' = '
 upsert_line $JUPYTER_CFG "c.NotebookApp.keyfile" "${SSL_DIR}/cert.key" ' = '
 echo "Done!"
 
+echo ""
+
+echo "Adding Jupyter as System Service ($JUPYTER_SERVICE)..."
+rm -f $JUPYTER_SERVICE
+append_line $JUPYTER_SERVICE "[Unit]"
+append_line $JUPYTER_SERVICE "Description=Jupyter Notebook Server"
+append_line $JUPYTER_SERVICE ""
+append_line $JUPYTER_SERVICE "[Service]"
+append_line $JUPYTER_SERVICE "Type=simple"
+append_line $JUPYTER_SERVICE "User=ubuntu"
+append_line $JUPYTER_SERVICE "ExecStart=/usr/bin/sudo /usr/local/bin/jupyter-notebook --allow-root --config=${JUPYTER_CFG}"
+append_line $JUPYTER_SERVICE ""
+append_line $JUPYTER_SERVICE "[Install]"
+append_line $JUPYTER_SERVICE "WantedBy=multi-user.target"
+systemctl deamon-reload
+systemctl enable jupyter
+systemctl start jupyter
+echo "Done!"
