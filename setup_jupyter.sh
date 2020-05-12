@@ -34,9 +34,10 @@ echo "Done!"
 echo ""
 
 echo "Creating SHA1 hash value..."
-echo "from notebook.auth import passwd" > $PY_TEMP
-echo "sha1=passwd('${JUPYTER_PASSWD}')" >> $PY_TEMP
-echo "print(sha1)" >> $PY_TEMP
+rm -f $PY_TEMP
+append_line $PY_TEMP "from notebook.auth import passwd"
+append_line $PY_TEMP "sha1=passwd('${JUPYTER_PASSWD}')"
+append_line $PY_TEMP "print(sha1)"
 SHA1=$(python3 $PY_TEMP)
 echo $SHA1
 rm $PY_TEMP
@@ -56,7 +57,7 @@ jupyter notebook --generate -y
 echo "Done!"
 
 echo "Updating Jupyter Defailt Config (${JUPYTER_CFG})..."
-upsert_line $JUPYTER_CFG "c.NotebookApp.password" "u'{$SHA1}'" ' = '
+upsert_line $JUPYTER_CFG "c.NotebookApp.password" "u'${SHA1}'" ' = '
 upsert_line $JUPYTER_CFG "c.NotebookApp.ip" "'${HOST_ADDR}'" ' = '
 upsert_line $JUPYTER_CFG "c.NotebookApp.notebook_dir" "'/'" ' = '
 upsert_line $JUPYTER_CFG "c.NotebookApp.certfile" "u'${SSL_DIR}/cert.pem'" ' = '
