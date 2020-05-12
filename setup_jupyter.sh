@@ -77,7 +77,7 @@ append_line $JUPYTER_SERVICE "ExecStart=/usr/bin/sudo /usr/local/bin/jupyter-not
 append_line $JUPYTER_SERVICE ""
 append_line $JUPYTER_SERVICE "[Install]"
 append_line $JUPYTER_SERVICE "WantedBy=multi-user.target"
-systemctl deamon-reload
+systemctl daemon-reload
 systemctl enable jupyter
 systemctl start jupyter
 echo "Done!"
