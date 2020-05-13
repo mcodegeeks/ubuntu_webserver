@@ -104,4 +104,4 @@ echo "Adding ${DEFAULT_USER} user in the docker group..."
 sudo gpasswd -a ${DEFAULT_USER} docker
 echo "Done!"
 
-logout
+exit
