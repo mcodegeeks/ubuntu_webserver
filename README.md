@@ -11,7 +11,7 @@ $ git clone https://github.com/mcodegeeks/ubuntu_webserver.git
 - Enabling swap file
 - Updating software repositories
 - Installing docker-ce and docker-compose
-- Adding web working directory and group (ubuntu:web /var/web)
+- Adding web working directory and group (ubuntu:www /var/www)
 ```
 $ sudo ubuntu_webserver/setup_ubuntu.sh 
 $ exit
