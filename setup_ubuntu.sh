@@ -8,7 +8,9 @@ SSH_CFG="/etc/ssh/sshd_config"
 TIME_ZONE="America/Toronto"
 SWAP_FILE="/var/swapfile"
 FSTAB_FILE="/etc/fstab"
-DEFAULT_USER="ubuntu"
+WORK_USER="ubuntu"
+WEB_GROUP="web"
+WEB_DIR="/var/web"
 
 echo "Updating SSH config (${SSH_CFG})..."
 upsert_line $SSH_CFG 'ClientAliveInterval' 60 ' '
@@ -100,6 +102,19 @@ echo "Done!"
 
 echo ""
 
-echo "Adding ${DEFAULT_USER} user in the docker group..." 
-sudo gpasswd -a ${DEFAULT_USER} docker
+echo "Adding ${WORK_USER} user in the docker group..." 
+gpasswd -a $WORK_USER docker
 echo "Done!"
+
+echo ""
+
+echo "Adding web working directory and group (${WORK_USER}:${WEB_GROUP} ${WEB_DIR})..."
+groupadd $WEB_GROUP
+usermod -aG $WEB_GROUP $WORK_USER
+mkdir -p "${WEB_DIR}/html"
+echo "<h1>Welcome To My Page!!<h1>" "${WEB_DIR}/html/index.html"
+chown -R "${WORK_USER}:${WEB_GROUP}" ${WEB_DIR}
+chmod 2775 $WEB_DIR
+find $WEB_DIR -type d -exec chmod 2775 {} +
+find $WEB_DIR -type f -exec chmod 0664 {} +
+echo ""
