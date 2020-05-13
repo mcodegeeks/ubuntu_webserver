@@ -112,6 +112,7 @@ echo "Adding web working directory and group (${WORK_USER}:${WORK_GROUP} ${WORK_
 groupadd $WORK_GROUP
 usermod -aG $WORK_GROUP $WORK_USER
 mkdir -p "${WORK_DIR}"
+rm -rf  "${WORK_DIR}/*"
 #ln -fs "$(pwd)/html" /var/www/
 cp -r "$(pwd)/html" ${WORK_DIR}
 chown -R "${WORK_USER}:${WORK_GROUP}" ${WORK_DIR}
