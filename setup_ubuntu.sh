@@ -103,7 +103,7 @@ echo "Done!"
 echo ""
 
 echo "Adding ${WORK_USER} user in the docker group..." 
-gpasswd -a $WORK_USER docker
+usermod -aG docker $WORK_USER
 echo "Done!"
 
 echo ""
