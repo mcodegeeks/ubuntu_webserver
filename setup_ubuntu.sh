@@ -102,5 +102,6 @@ echo ""
 
 echo "Adding ${DEFAULT_USER} user in the docker group..." 
 usermod -aG docker ${DEFAULT_USER}
+newgrp docker
 echo "Done!"
 
