@@ -111,10 +111,10 @@ echo ""
 echo "Adding web working directory and group (${WORK_USER}:${WORK_GROUP} ${WORK_DIR})..."
 groupadd $WORK_GROUP
 usermod -aG $WORK_GROUP $WORK_USER
-mkdir -p "${WORK_DIR}/www"
+mkdir -p "${WORK_DIR}"
 chown -R "${WORK_USER}:${WORK_GROUP}" ${WORK_DIR}
 chmod 2775 $WORK_DIR
 find $WORK_DIR -type d -exec chmod 2775 {} +
 find $WORK_DIR -type f -exec chmod 0664 {} +
-ln -s "./html" "${WORK_DIR}/www"
+ln -s "./html" "${WORK_DIR}"
 echo "Done!"
