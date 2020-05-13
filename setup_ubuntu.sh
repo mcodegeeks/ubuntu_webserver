@@ -88,8 +88,13 @@ echo "Installing from the docker repo instead of the default Ubuntu repo..."
 apt-cache policy docker-ce
 echo "Done!"
 
-echo "Installing docker..."
+echo "Installing docker ce..."
 apt -y install docker-ce
+echo "Done!"
+
+echo ""
+
+echo "Installing docker compose..."
 apt -y install docker-compose
 echo "Done!"
 
