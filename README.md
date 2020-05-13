@@ -13,6 +13,7 @@ $ git clone https://github.com/mcodegeeks/ubuntu_webserver.git
 - Installing docker-ce and docker-compose
 ```
 $ sudo ubuntu_webserver/setup_ubuntu.sh 
+$ exit
 ```
 
 ## Tip for SSH connection on Localmachine
