@@ -8,6 +8,7 @@ SSH_CFG="/etc/ssh/sshd_config"
 TIME_ZONE="America/Toronto"
 SWAP_FILE="/var/swapfile"
 FSTAB_FILE="/etc/fstab"
+DEFAULT_USER="ubuntu"
 
 echo "Updating SSH config (${SSH_CFG})..."
 upsert_line $SSH_CFG 'ClientAliveInterval' 60 ' '
@@ -52,3 +53,49 @@ else
     swapon --show
 fi
 echo "Done!"
+
+echo ""
+
+echo "Updating software repositories..."
+apt -y update
+echo "Done!"
+
+echo ""
+
+echo "Installing prerequisite packages..."
+apt -y install apt-transport-https ca-certificates curl software-properties-common
+echo "Done!"
+
+echo ""
+
+echo "Adding GPG key for the official docker repository..."
+curl -fsSL https://download.docker.com/linux/ubuntu/gpg | apt-key add -
+echo "Done!"
+
+echo ""
+
+echo "Adding the docker repository to APT source..."
+add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu bionic stable"
+echo "Done!"
+
+echo "Update the package database with the docker packages..."
+apt -y update
+echo "Done!"
+
+echo ""
+
+echo "Installing from the docker repo instead of the default Ubuntu repo..."
+apt-cache policy docker-ce
+echo "Done!"
+
+echo "Installing docker..."
+apt -y install docker-ce
+apt -y install docker-compose
+echo "Done!"
+
+echo ""
+
+echo "Adding ${DEFAULT_USER} user in the docker group..." 
+usermod -aG docker ${DEFAULT_USER}
+echo "Done!"
+
