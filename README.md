@@ -9,6 +9,8 @@ $ git clone https://github.com/mcodegeeks/ubuntu_webserver.git
 - Generate SSH key pair
 - Updating time zone (America/Toronto)
 - Enabling swap file
+- Updating software repositories
+- Installing docker-ce and docker-compose
 ```
 $ sudo ubuntu_webserver/setup_ubuntu.sh 
 ```
