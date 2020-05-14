@@ -2,7 +2,7 @@
 https://docs.docker.com/engine/reference/commandline/docker/
 
 # Images
-$ docker pull python
+$ docker pull python:3
 $ docker pull nginx
 $ docker pull mysql:5.6
 
@@ -60,6 +60,7 @@ $ docker run [OPTIONS]                          # Run a command in a new contain
   --interactive , -i                              Keep STDIN open even if not attached
   --name                                          Assign a name to the container
   --publish, -p                                   Publish a container’s port(s) to the host
+  --rm                                            Automatically remove the container when it exits
   --tty , -t                                      Allocate a pseudo-TTY  
   --volume , -v                                   Bind mount a volume
 $ docker save                                   # Save one or more images to a tar archive (streamed to STDOUT by default)
