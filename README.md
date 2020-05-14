@@ -42,3 +42,8 @@ $ sudo ubuntu_webserver/setup_jupyter.sh <password>
 ```
 https://<domain>:88888
 ```
+
+## Install Appliction 
+```
+$ docker run -it --rm --name hompage mcodegeeks/homepage  
+```
