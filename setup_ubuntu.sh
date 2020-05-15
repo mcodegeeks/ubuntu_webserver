@@ -1,10 +1,7 @@
 #!/bin/bash
-source setup_common.sh
+source setup_config.sh
+source setup_helper.sh
 is_sudo_exec
-
-TIME_ZONE="America/Toronto"
-SWAP_FILE="/var/swapfile"
-FSTAB_FILE="/etc/fstab"
 
 echo "Updating SSH config (${SSH_CFG})..."
 upsert_line $SSH_CFG 'ClientAliveInterval' 60 ' '

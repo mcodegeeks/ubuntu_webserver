@@ -1,9 +1,8 @@
 #!/bin/bash
-source setup_common.sh
+source setup_config.sh
+source setup_helper.sh
 is_sudo_exec
 
-SSL_DIR="${SSH_CFG}"
-PY_TEMP="/tmp/temp.py"
 HOST_ADDR=$(hostname -I | awk '{print $1}')
 
 JUPYTER_CFG="/home/ubuntu/.jupyter/jupyter_notebook_config.py"

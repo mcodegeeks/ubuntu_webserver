@@ -1,5 +1,5 @@
 #!/bin/bash
-source setup_common.sh
+source setup_config.sh
 
 echo "Pulling jenkins docker image..."
 docker pull jenkins
