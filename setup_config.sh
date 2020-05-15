@@ -16,6 +16,10 @@ FSTAB_FILE="/etc/fstab"
 
 PY_TEMP="/tmp/temp.py"
 
+# For docker
+DOCKER_BIN="/usr/bin/docker"
+DOCKER_SOCK="/var/run/docker.sock"
+
 # For Jupyter
 JUPYTER_CFG="/home/ubuntu/.jupyter/jupyter_notebook_config.py"
 JUPYTER_SERVICE="/etc/systemd/system/jupyter.service"

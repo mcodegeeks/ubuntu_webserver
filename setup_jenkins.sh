@@ -18,7 +18,7 @@ if [[ ! -z $line ]]; then
 fi
 
 echo "Runing jenkins docker container..."
-docker run --name $JENKINS_NAME -p $JENKINS_PORT:8080 -p 50000:50000 -v $JENKINS_DIR:/var/jenkins_home -d $JENKINS_IMAGE
+docker run --name $JENKINS_NAME -p $JENKINS_PORT:8080 -p 50000:50000 -v $JENKINS_DIR:/var/jenkins_home -v $DOCKER_SOCK:$DOCKER_SOCK -v $DOCKER_BIN:$DOCKER_BIN -d $JENKINS_IMAGE
 echo -e "Done!\n"
 
 echo "Waiting for an initial admin password to be generated..."
