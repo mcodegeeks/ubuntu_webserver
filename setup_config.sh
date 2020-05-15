@@ -22,6 +22,8 @@ JUPYTER_SERVICE="/etc/systemd/system/jupyter.service"
 JUPYTER_PASSWD=""
 
 # For Jenkins docker
+JENKINS_IMAGE="jenkins"
+JENKINS_NAME="jenkins"
+JENKINS_PORT="8080"
 JENKINS_DIR="${WORK_DIR}/jenkins"
 JENKINS_ADMIN="root"
-JENKINS_PORT="8080"

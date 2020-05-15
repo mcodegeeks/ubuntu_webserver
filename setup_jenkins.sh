@@ -2,22 +2,24 @@
 source setup_config.sh
 
 echo "Pulling jenkins docker image..."
-docker pull jenkins
-echo "Done!"
-
-echo ""
+docker pull $JENKINS_IMAGE
+echo -e "Done!\n"
 
 echo "Adding jenkins working directory (${JENKINS_DIR})..."
-mkdir -p ${JENKINS_DIR}
-echo "Done!"
+mkdir -p $JENKINS_DIR
+echo -e "Done!\n"
 
-echo ""
+docker ps -a | grep $JENKINS_NAME > /dev/null
+if [ ! $? eq 0 ]; then
+    echo "Removing jenkins docker container..."
+    docker rm -f $JENKINS_NAME
+    echo -e "Done!\n"
+fi
 
-echo "Executing jenkins docker container..."
-docker rm -f jenkins
-docker run --name jenkins -p $JENKINS_PORT:8080 -v $JENKINS_DIR:/var/jenkins_home -v /var/run/docker.sock:/var/run/docker.sock -u $JENKINS_ADMIN -d jenkins
-echo "Done!"
+echo "Runing jenkins docker container..."
+docker run --name $JENKINS_NAME -p $JENKINS_PORT:8080 -v $JENKINS_DIR:/var/jenkins_home -v /var/run/docker.sock:/var/run/docker.sock -u $JENKINS_ADMIN -d jenkins
+echo -e "Done!\n"
 
 echo "An admin user has been created and a password generated."
 echo "Please use the following password to proceed to installation:"
-docker exec jenkins cat /var/jenkins_home/secrets/initialAdminPassword
+docker exec $JENKINS_NAME cat /var/jenkins_home/secrets/initialAdminPassword

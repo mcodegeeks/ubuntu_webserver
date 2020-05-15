@@ -17,21 +17,15 @@ done
 
 echo "Updating software repositories..."
 apt-get -y update
-echo "Done!"
-
-echo ""
+echo -e "Done!\n"
 
 echo "Installing python package manager..."
 apt-get -y install python3-pip
-echo "Done!"
-
-echo ""
+echo -e "Done!\n"
 
 echo "Installing Jupyter Notebook..."
 pip3 install notebook
-echo "Done!"
-
-echo ""
+echo -e "Done!\n"
 
 echo "Creating SHA1 hash value..."
 rm -f $PY_TEMP
@@ -41,16 +35,12 @@ append_line $PY_TEMP "print(sha1)"
 SHA1=$(python3 $PY_TEMP)
 echo $SHA1
 rm $PY_TEMP
-echo "Done!"
-
-echo ""
+echo -e "Done!\n"
 
 echo "Creating SSL key-pair..."
 mkdir -p $SSL_DIR
 openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout "${SSL_DIR}/cert.key" -out "${SSL_DIR}/cert.pem" -batch
-echo "Done!"
-
-echo ""
+echo -e "Done!\n"
 
 echo "Creating Jupyter Defailt Config..."
 jupyter notebook --generate -y
@@ -62,9 +52,7 @@ upsert_line $JUPYTER_CFG "c.NotebookApp.ip" "'${HOST_ADDR}'" ' = '
 upsert_line $JUPYTER_CFG "c.NotebookApp.notebook_dir" "'/'" ' = '
 upsert_line $JUPYTER_CFG "c.NotebookApp.certfile" "u'${SSL_DIR}/cert.pem'" ' = '
 upsert_line $JUPYTER_CFG "c.NotebookApp.keyfile" "u'${SSL_DIR}/cert.key'" ' = '
-echo "Done!"
-
-echo ""
+echo -e "Done!\n"
 
 echo "Adding Jupyter as System Service ($JUPYTER_SERVICE)..."
 rm -f $JUPYTER_SERVICE
