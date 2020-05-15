@@ -5,9 +5,9 @@ is_sudo_exec
 
 HOST_ADDR=$(hostname -I | awk '{print $1}')
 
-JUPYTER_CFG="/home/ubuntu/.jupyter/jupyter_notebook_config.py"
-JUPYTER_SERVICE="/etc/systemd/system/jupyter.service"
-JUPYTER_PASSWD=$1
+if [[ -z $JUPYTER_PASSWD ]]; then
+    JUPYTER_PASSWD=$1
+fi
 
 while [ -z "$JUPYTER_PASSWD" ]
 do
