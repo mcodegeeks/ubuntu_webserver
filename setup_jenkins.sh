@@ -21,7 +21,7 @@ echo "Runing jenkins docker container..."
 docker run --name $JENKINS_NAME -p $JENKINS_PORT:8080 -p 50000:50000 -v $JENKINS_DIR:/var/jenkins_home -d $JENKINS_IMAGE
 echo -e "Done!\n"
 
-echo "Waiting for a password to be generated..."
+echo "Waiting for an initial admin password to be generated..."
 while [ ! -f "${JENKINS_DIR}/secrets/initialAdminPassword" ]
 do
     sleep 2
