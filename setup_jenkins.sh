@@ -21,6 +21,10 @@ echo "Runing jenkins docker container..."
 docker run --name $JENKINS_NAME -p $JENKINS_PORT:8080 -p 50000:50000 -v $JENKINS_DIR:/var/jenkins_home -d $JENKINS_IMAGE
 echo -e "Done!\n"
 
-echo "An admin user has been created and a password generated."
+echo "Waiting for a password to be generated..."
+while [ ! -f "${JENKINS_DIR}/secrets/initialAdminPassword" ]
+do
+    sleep 2
+done
 echo "Please use the following password to proceed to installation:"
-docker exec $JENKINS_NAME cat /var/jenkins_home/secrets/initialAdminPassword
+cat "${JENKINS_DIR}/secrets/initialAdminPassword"
