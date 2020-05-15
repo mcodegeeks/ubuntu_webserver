@@ -1,10 +1,11 @@
 #!/bin/bash
-source helper_functions.sh
+source setup_common.sh
 is_sudo_exec
 
-HOST_ADDR=$(hostname -I | awk '{print $1}')
-SSL_DIR="/${USER}/.ssh"
+SSL_DIR="${SSH_CFG}"
 PY_TEMP="/tmp/temp.py"
+HOST_ADDR=$(hostname -I | awk '{print $1}')
+
 JUPYTER_CFG="/home/ubuntu/.jupyter/jupyter_notebook_config.py"
 JUPYTER_SERVICE="/etc/systemd/system/jupyter.service"
 JUPYTER_PASSWD=$1

@@ -1,16 +1,10 @@
 #!/bin/bash
-source helper_functions.sh
+source setup_common.sh
 is_sudo_exec
 
-SSH_KEY="id_rsa"
-SSH_DIR="/${USER}/.ssh"
-SSH_CFG="/etc/ssh/sshd_config"
 TIME_ZONE="America/Toronto"
 SWAP_FILE="/var/swapfile"
 FSTAB_FILE="/etc/fstab"
-WORK_USER="ubuntu"
-WORK_GROUP="www"
-WORK_DIR="/var/www"
 
 echo "Updating SSH config (${SSH_CFG})..."
 upsert_line $SSH_CFG 'ClientAliveInterval' 60 ' '
