@@ -58,7 +58,7 @@ e5a40bfb670943b8829673315d7099ed
 
 ```
 ```
-https://<domain>:8080
+http://<domain>:8080
 ```
 
 ## Install Appliction 
