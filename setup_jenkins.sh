@@ -6,6 +6,7 @@ docker pull $JENKINS_IMAGE
 echo -e "Done!\n"
 
 echo "Adding jenkins working directory (${JENKINS_DIR})..."
+sudo rm -rf $JENKINS_DIR
 mkdir -p $JENKINS_DIR
 echo -e "Done!\n"
 
@@ -17,7 +18,7 @@ if [[ ! -z $line ]]; then
 fi
 
 echo "Runing jenkins docker container..."
-docker run --name $JENKINS_NAME -p $JENKINS_PORT:8080 -v $JENKINS_DIR:/var/jenkins_home -v /var/run/docker.sock:/var/run/docker.sock -u $JENKINS_ADMIN -d jenkins
+docker run --name $JENKINS_NAME -p $JENKINS_PORT:8080 -p 50000:50000 -v $JENKINS_DIR:/var/jenkins_home -d $JENKINS_IMAGE
 echo -e "Done!\n"
 
 echo "An admin user has been created and a password generated."

@@ -9,7 +9,7 @@ $ docker pull mysql:5.6
 $ docker run --name nginx -p 80:80 -v /var/www/html:/usr/share/nginx/html:ro -d nginx
 $ docker run --name apache -p 8080:80 -v /var/www/html:/usr/local/apache2/htdocs/ -dit httpd
 
-$ docker run --name jenkins -p 8080:8080 -v /var/www/jenkins:/var/jenkins_home -v /var/run/docker.sock:/var/run/docker.sock -u root -d jenkins
+$ docker run --name jenkins -p 8080:8080 -p 50000:50000 -v /var/www/jenkins:/var/jenkins_home -d jenkins/jenkins
 $ docker exec jenkins cat /var/jenkins_home/secrets/initialAdminPassword
 $ docker logs jenkins
 
