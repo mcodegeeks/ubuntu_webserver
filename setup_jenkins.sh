@@ -22,10 +22,18 @@ docker run --name $JENKINS_NAME -p $JENKINS_PORT:8080 -p 50000:50000 -v $JENKINS
 echo -e "Done!\n"
 
 echo "Waiting for an initial admin password to be generated..."
-while [ ! -f "${JENKINS_DIR}/secrets/initialAdminPassword" ]
+n=0
+while [ $n -le 10 ]
 do
-    sleep 2
+    if sudo test -f "${JENKINS_DIR}/secrets/initialAdminPassword"; then
+        echo "Please use the following password to proceed to installation:"
+        sudo cat "${JENKINS_DIR}/secrets/initialAdminPassword"
+        echo "Done!"
+        exit 0
+    else
+        sleep 3
+        (( n++ ))
+    fi
 done
-echo "Please use the following password to proceed to installation:"
-cat "${JENKINS_DIR}/secrets/initialAdminPassword"
+echo "The password isn't generated at this moment. Find '${JENKINS_DIR}/secrets/initialAdminPassword' later."
 echo "Done!"
