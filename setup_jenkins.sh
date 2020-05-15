@@ -28,3 +28,4 @@ do
 done
 echo "Please use the following password to proceed to installation:"
 cat "${JENKINS_DIR}/secrets/initialAdminPassword"
+echo "Done!"
