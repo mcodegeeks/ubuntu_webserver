@@ -9,8 +9,8 @@ echo "Adding jenkins working directory (${JENKINS_DIR})..."
 mkdir -p $JENKINS_DIR
 echo -e "Done!\n"
 
-docker ps -a | grep $JENKINS_NAME > /dev/null
-if [ ! $? eq 0 ]; then
+line=$(docker ps -a | grep $JENKINS_NAME)
+if [[ ! -z $line ]]; then
     echo "Removing jenkins docker container..."
     docker rm -f $JENKINS_NAME
     echo -e "Done!\n"
