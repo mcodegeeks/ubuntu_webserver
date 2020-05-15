@@ -13,7 +13,7 @@ $ git clone https://github.com/mcodegeeks/ubuntu_webserver.git
 - Installing docker-ce and docker-compose
 - Adding web working directory and group (ubuntu:www /var/www)
 ```
-$ sudo ubuntu_webserver/setup_ubuntu.sh 
+$ sudo ./setup_ubuntu.sh 
 $ exit
 ```
 
@@ -37,10 +37,15 @@ $ ssh ubuntu@<domain>
 
 ## Install Jupyter (Optional)
 ```
-$ sudo ubuntu_webserver/setup_jupyter.sh <password>
+$ sudo ./setup_jupyter.sh <password>
 ```
 ```
 https://<domain>:88888
+```
+
+## Install Jenkins (Optional)
+```
+$ ./setup_jenkins.sh
 ```
 
 ## Install Appliction 
