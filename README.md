@@ -40,12 +40,25 @@ $ ssh ubuntu@<domain>
 $ sudo ./setup_jupyter.sh <password>
 ```
 ```
-https://<domain>:88888
+https://<domain>:8888
 ```
 
 ## Install Jenkins (Optional)
 ```
 $ ./setup_jenkins.sh
+```
+- After installation completes, you can find the following message:
+```
+$ ./setup_jenkins.sh 
+...
+
+Waiting for an initial admin password to be generated...
+Please use the following password to proceed to installation:
+e5a40bfb670943b8829673315d7099ed
+
+```
+```
+https://<domain>:8080
 ```
 
 ## Install Appliction 
