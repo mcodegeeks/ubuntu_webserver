@@ -27,6 +27,9 @@ if __name__ == "__main__":
     app.run()
 ```
 
+# Run the flask app
+(venv) $ flask run
+
 # Navigate to http://localhost:5000/. You should see:
 ```
 {"hello":"world"}
