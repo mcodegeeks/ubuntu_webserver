@@ -24,13 +24,11 @@ def create_app(script_info=None):
 
 # Creating the Web Server Gateway Interface (WSGI) Entry Point (wsgi.py)
 ```
-from flask.cli import FlaskGroup
 from app import create_app
 
-cli = FlaskGroup(create_app=create_app)
-
+app = create_app()
 if __name__ == "__main__":
-    cli()
+    app.run()
 ```
 
 # Run the flask app

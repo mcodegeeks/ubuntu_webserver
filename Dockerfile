@@ -13,4 +13,4 @@ RUN pip install --upgrade pip
 RUN pip install --no-cache-dir -r requirements.txt
 
 # Run server
-CMD python wsgi.py run -h 0.0.0.0
+CMD gunicorn --bind 0.0.0.0:5000 wsgi:app

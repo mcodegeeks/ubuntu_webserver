@@ -4,7 +4,8 @@ services:
   app:
     build: .
     image: mcodegeeks/homepage
-    command: python3 wsgi.py run -h 0.0.0.0
+    restart: always
+    command: gunicorn --bind 0.0.0.0:5000 wsgi:app
     volumes:
       - ./app:/user/src/app
     ports:
