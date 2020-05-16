@@ -8,27 +8,33 @@ $ source venv/bin/activate
 ## Note: regardless of which version of Python you are using, when the virtual environment is activated, you should use the pip command (not pip3).
 (venv) $ pip install flask
 
-# Create a sample app (__init__.py)
+# Create a sample app (app.py)
 ```
 from flask import Flask, jsonify
 
-app = Flask(__name__)
+def create_app(script_info=None):
+    app = Flask(__name__)
 
-@app.route("/")
-def index():
-    return jsonify(hello="world")
+    @app.route("/")
+    def index():
+        return jsonify(hello="world")
+
+    return app
 ```
 
 # Creating the Web Server Gateway Interface (WSGI) Entry Point (wsgi.py)
 ```
-from app import app
+from flask.cli import FlaskGroup
+from app import create_app
+
+cli = FlaskGroup(create_app=create_app)
 
 if __name__ == "__main__":
-    app.run()
+    cli()
 ```
 
 # Run the flask app
-(venv) $ flask run
+(venv) $ flask run 
 
 # Navigate to http://localhost:5000/. You should see:
 ```
