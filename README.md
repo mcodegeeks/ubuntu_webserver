@@ -95,5 +95,6 @@ $ docker-compose up -d
 
 ## Run web application server
 ```
+$ docker-compose pull
 $ docker-compose up --no-build -d 
 ```
