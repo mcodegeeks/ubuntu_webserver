@@ -21,6 +21,9 @@ $ mysql -u root -p
 $ docker build -t mcodegeeks/homepage .
 $ docker run --name homepage -p 5000:5000 -d mcodegeeks/homepage
 
+$ docker-compose up --no-build -d
+$ docker-compose stop
+
 ### Commands
 $ docker attach                                 # Attach local standard input, output, and error streams to a running container
 $ docker build                                  # Build an image from a Dockerfile
