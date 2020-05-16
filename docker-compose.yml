@@ -2,10 +2,10 @@ version: '3'
 
 services:
   app:
-    build: .
     image: mcodegeeks/homepage
-    command: python3 wsgi.py run
+    command: python3 wsgi.py run -h 0.0.0.0
     volumes:
       - ./app:/user/src/app
     ports:
       - 5000:5000
+    container_name: homepage
