@@ -31,3 +31,6 @@ JENKINS_NAME="jenkins"
 JENKINS_PORT="8080"
 JENKINS_DIR="${WORK_DIR}/jenkins"
 JENKINS_ADMIN="root"
+
+# For Database
+POSTGRES_DATA_DIR="${WORK_DIR}/db/postgres"
