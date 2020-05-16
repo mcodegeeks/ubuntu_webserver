@@ -60,6 +60,25 @@ e5a40bfb670943b8829673315d7099ed
 ```
 http://<domain>:8080
 ```
+## Developing flask application on localmachine
+```
+cd app
+
+# Create a virtual environment
+$ python3 -m venv venv 
+
+# Activate the virtual environment
+$ source venv/bin/activate
+
+# Installing required packages
+(venv) pip install -r requirements.txt
+
+# Run the flask app
+(venv) $ flask run
+```
+```
+http://localhost:5000
+```
 
 ## Install Appliction 
 ```
