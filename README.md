@@ -80,7 +80,16 @@ $ source venv/bin/activate
 http://localhost:5000
 ```
 
-## Install Appliction 
+## Build web application
 ```
-$ docker run -it --rm --name hompage mcodegeeks/homepage  
+$ docker build -t mcodegeeks/homepage .
+$ docker run --name homepage -p 5000:5000 -d mcodegeeks/homepage
+
+or
+$ docker-compose up --no-build -d
+```
+
+## Run web application server
+```
+$ docker-compose up --no-build -d 
 ```
