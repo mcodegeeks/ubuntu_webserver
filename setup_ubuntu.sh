@@ -46,7 +46,7 @@ apt -y update
 echo -e "Done!\n"
 
 echo "Installing prerequisite packages..."
-apt -y install apt-transport-https ca-certificates curl software-properties-common
+apt -y install apt-transport-https ca-certificates curl software-properties-common python3-venv
 echo -e "Done!\n"
 
 echo "Adding GPG key for the official docker repository..."
