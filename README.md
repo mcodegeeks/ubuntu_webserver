@@ -84,7 +84,6 @@ http://localhost:5000
 ```
 $ docker build -t mcodegeeks/homepage .
 $ docker run --name homepage -p 5000:5000 -d mcodegeeks/homepage
-
 or
 $ docker-compose up --no-build -d
 ```
