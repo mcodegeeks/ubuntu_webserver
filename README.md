@@ -2,65 +2,55 @@
 Practice Ubuntu Webserver on Amazon Lightsail Cloud
 ```
 $ git clone https://github.com/mcodegeeks/ubuntu_webserver.git
+$ cd ubuntu_webserver
+$ ./setup.sh [OPTIONS]
 ```
 
-## Essential Setup for Ubuntu
-- Updating SSH config for keeping client connection
-- Generate SSH key pair
-- Updating time zone (America/Toronto)
-- Enabling swap file
-- Updating software repositories
-- Installing docker-ce and docker-compose
-- Adding web working directory and group (ubuntu:www /var/www)
+## Setup Options
 ```
-$ sudo ./setup_ubuntu.sh 
-$ exit
-```
-
-## Tip for SSH connection on Localmachine
-- Generate SSH key pair or refresh known hostname and ip
-```
-$ ssh-keygen -t rsa -q -N ""
-```
-```
-$ ssh-keygen -R <domain>
-$ ssh-keygen -R <ip>
-```
-- Copy local SSH public key and paste it on the server instance 
-```
-$ cat ~/.ssh/id_rsa.pub | ssh -i <aws_generated_key>.pem ubuntu@<domain> 'tee -a ~/.ssh/authorized_keys'
-```
-- Now, you can simply login SSH with the following:
-```
-$ ssh ubuntu@<domain>
+usage: ./setup.sh [OPTIONS]
+options:
+  -h,  --help              Print this help.
+  -b,  --build             Build images before starting containers.
+  -r,  --rmi               Remove all images used by any service.
+  -o,  --os-specific       Setup os-specific dependencies.
+       --openssl           Create a self-signed certificate.
+       --jupyter           Insall Jupyter Notebook service.
+       --time-zone         Set system time zone.
+  -v,  --volumes           Remove named volumes declared in the 'volumes'
+                           section of the Compose file and anonymous volumes
+                           attached to containers.
 ```
 
-## Install Jupyter (Optional)
+For example:
 ```
-$ sudo ./setup_jupyter.sh <password>
-```
-```
-https://<domain>:8888
+# For production (Server)
+$ ./setup.sh -o --jupyter --time-zone="America/Toronto"
+
+# For development
+$ ./setup.sh
+
+# For docker image refresh
+$ ./setup.sh --rmi
+
+# For docker build instead of pull
+$ ./setup.sh --build
 ```
 
-## Install Jenkins (Optional)
+## Services
+* Web Application (GUnicorn): port:5000
+* Jupyter Notebook: port:8888
+* Nginx Webserver: port:80
+  
 ```
-$ ./setup_jenkins.sh
-```
-- After installation completes, you can find the following message:
-```
-$ ./setup_jenkins.sh 
-...
+# Services Up
+$ docker-compose up --no-build -d
 
-Waiting for an initial admin password to be generated...
-Please use the following password to proceed to installation:
-e5a40bfb670943b8829673315d7099ed
+# Services Down
+$ docker-compose down
+```
 
-```
-```
-http://<domain>:8080
-```
-## Developing flask application on localmachine
+## Developing flask application
 ```
 cd app
 
@@ -80,21 +70,20 @@ $ source venv/bin/activate
 http://localhost:5000
 ```
 
-## Build web application
+## Tip for SSH connection on Localmachine
+- Generate SSH key pair or refresh known hostname and ip
 ```
-$ docker build -t mcodegeeks/homepage .
-$ docker run --name homepage -p 5000:5000 -d mcodegeeks/homepage
-```
-```
-$ docker-compose build
-$ docker-compose up --no-build -d
+$ ssh-keygen -t rsa -q -N ""
 ```
 ```
-$ docker-compose up -d
+$ ssh-keygen -R <domain>
+$ ssh-keygen -R <ip>
 ```
-
-## Run web application server
+- Copy local SSH public key and paste it on the server instance 
 ```
-$ docker-compose pull
-$ docker-compose up --no-build -d 
+$ cat ~/.ssh/id_rsa.pub | ssh -i <aws_generated_key>.pem ubuntu@<domain> 'tee -a ~/.ssh/authorized_keys'
+```
+- Now, you can simply login SSH with the following:
+```
+$ ssh ubuntu@<domain>
 ```
