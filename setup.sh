@@ -32,6 +32,10 @@ while getopts "$optspec" optchar; do
     case "${optchar}" in
         -)
             case "${OPTARG}" in
+                help)
+                    show_help
+                    exit 2
+                    ;;
                 build)
                     build=yes;;
                 rmi)
@@ -62,7 +66,8 @@ while getopts "$optspec" optchar; do
             esac;;
         h)
             show_help
-            exit 2;;
+            exit 2
+            ;;
         b)
             build=yes;;
         o)
