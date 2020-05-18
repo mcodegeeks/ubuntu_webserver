@@ -32,6 +32,9 @@ $ docker build -t mcodegeeks/homepage .
 $ docker run --name homepage -p 5000:5000 -v data-volume:/data-volume -d --rm mcodegeeks/homepage
 $ docker run --name homepage -p 5000:5000 -d mcodegeeks/homepage
 $ docker run --name homepage -p 5000:5000 -v data-volume:/data-volume -d --rm mcodegeeks/homepage gunicorn -b unix:/data-volume/nginx/gunicorn.sock -b :5000 wsgi:app
+
+docker run --name homepage -p 5000:5000 -v data-volume:/data-volume -it --rm mcodegeeks/homepage /bin/bash
+
 $ docker exec -it homepage /bin/bash
 $ docker run -it --rm mcodegeeks/homepage /bin/bash
 

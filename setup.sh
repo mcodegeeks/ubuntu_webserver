@@ -352,15 +352,14 @@ function docker_start_services() {
 }
 
 function os_specific_for_ubuntu() {
-    #update_ssh_config
-    #create_ssh_key
-    #set_system_time_zone_for_ubuntu
-    #create_virtual_memory
-    #install_packages_for_ubuntu
+    update_ssh_config
+    create_ssh_key
     if [[ $openssl = "yes" ]]; then
         create_ssl_cert
-    fi
-
+    fi    
+    set_system_time_zone_for_ubuntu
+    create_virtual_memory
+    install_packages_for_ubuntu
     if [[ $jupyter = "yes" ]]; then
         install_jupyter_service
     fi
