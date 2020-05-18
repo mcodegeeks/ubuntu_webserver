@@ -1,0 +1,7 @@
+.git
+.gitignore
+.dockerignore
+sftp-config.json
+
+**/__pycache__
+**/venv

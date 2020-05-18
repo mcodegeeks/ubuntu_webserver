@@ -4,10 +4,24 @@ services:
   app:
     build: .
     image: mcodegeeks/homepage
-    restart: always
-    command: gunicorn --bind 0.0.0.0:5000 wsgi:app
-    volumes:
-      - ./app:/user/src/app
-    ports:
-      - 5000:5000
     container_name: homepage
+    restart: unless-stopped
+    command: gunicorn -b unix:/data-volume/nginx/gunicorn.sock -b :5000 wsgi:app
+    volumes:
+      - data-volume:/data-volume
+    ports:
+      - "5000:5000"
+
+  web:
+    image: nginx
+    restart: unless-stopped
+    container_name: nginx
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/conf.d/default.conf:ro
+      - data-volume:/data-volume
+    ports:
+      - "80:80"
+
+volumes:
+  data-volume: 
+    external: true
