@@ -1,5 +1,13 @@
 #!/bin/bash
-source setup_config.sh
+
+DOCKER_UBUNTU="ubuntu:18.04"
+DOCKER_JENKINS="jenkins/jenkins"
+
+JENKINS_IMAGE="jenkins/jenkins"
+JENKINS_NAME="jenkins"
+JENKINS_PORT="8080"
+JENKINS_DIR="${WORK_DIR}/jenkins"
+JENKINS_ADMIN="root"
 
 echo "Pulling jenkins docker image..."
 docker pull $JENKINS_IMAGE
