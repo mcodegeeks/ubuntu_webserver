@@ -1,0 +1,10 @@
+[Unit]
+Description=Jupyter Notebook Server
+
+[Service]
+Type=simple
+User=ubuntu
+ExecStart=/usr/bin/sudo /usr/local/bin/jupyter-notebook --allow-root --config=/home/ubuntu/.jupyter/jupyter_notebook_config.py
+
+[Install]
+WantedBy=multi-user.target

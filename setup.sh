@@ -1,10 +1,10 @@
 #!/bin/bash
 OS_NAME="Unknown"
 SWAP_FILE="/var/swapfile"
+JUPYTER_PASSWD=""
 DATA_VOLUME="data-volume"
 IMAGE_HOMEPAGE="mcodegeeks/homepage"
 CONTAINER_HOMEPAGE="homepage"
-
 function show_help() {
     echo "usage: $0 [OPTIONS]"
     echo "options:"
@@ -12,6 +12,8 @@ function show_help() {
     echo "  -b,  --build             Build images before starting containers."
     echo "  -r,  --rmi               Remove all images used by any service."
     echo "  -o,  --os-specific       Setup os-specific dependencies."
+    echo "       --openssl           Create a self-signed certificate."
+    echo "       --jupyter           Insall Jupyter Notebook service."
     echo "       --time-zone         Set system time zone."
     echo "  -v,  --volumes           Remove named volumes declared in the 'volumes'"
     echo "                           section of the Compose file and anonymous volumes"
@@ -21,6 +23,8 @@ function show_help() {
 build=no
 rmi=no
 os_specific=no
+openssl=no
+jupyter=no
 time_zone="America/Toronto" # "UTC"
 volumes=no
 optspec=":bhorv-:"
@@ -35,8 +39,16 @@ while getopts "$optspec" optchar; do
                 volumes)
                     volumes=yes;;
                 os-specific)
-                    # val="${!OPTIND}"; OPTIND=$(( $OPTIND + 1 ))
                     os_specific=yes;;
+                openssl)
+                    openssl=yes;;
+                jupyter)
+                    jupyter=yes;;
+                jupyter=*)
+                    val=${OPTARG#*=}
+                    opt=${OPTARG%=$val}
+                    JUPYTER_PASSWD=$val
+                    jupyter=yes;;
                 time-zone=*)
                     val=${OPTARG#*=}
                     opt=${OPTARG%=$val}
@@ -102,7 +114,7 @@ function config_update() {
         $sudo touch $1
     fi
 
-    line=$(grep ".*${key}[[:space:]]*${delim}" $file)
+    line=$($sudo grep ".*${key}[[:space:]]*${delim}" $file)
     if [[ -z $line ]]; then
         echo "(+) ${key}${delim}${val}"
         echo "${key}${delim}${val}" | $sudo tee -a $file > /dev/null
@@ -120,7 +132,7 @@ function get_os_version() {
     fi
 }
 
-function ssh_config_update() {
+function update_ssh_config() {
     local file="/etc/ssh/sshd_config"
     echo "Updating SSH config '${file}'..."
     config_update $file 'ClientAliveInterval' 60 ' ' yes
@@ -128,7 +140,7 @@ function ssh_config_update() {
     echo -e "Done!\n"
 }
 
-function ssh_key_generate() {
+function create_ssh_key() {
     local dir="${HOME}/.ssh"
     local file="${dir}/id_rsa"
     mkdir -p $dir
@@ -145,8 +157,19 @@ function ssh_key_generate() {
     echo ""
 }
 
+function create_ssl_cert() {
+    local dir="${HOME}/.ssh"
+    local key="${dir}/cert.key"
+    local cert="${dir}/cert.pem"
+
+    echo "Creating SSL certificate and key..."
+    openssl rand -out /home/ubuntu/.rnd -hex 256
+    openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout $key -out $cert -batch
+    echo -e "Done!\n"
+}
+
 function set_system_time_zone_for_ubuntu() {
-    echo "Set system time zone..."
+    echo "Settting system time zone..."
     timedatectl set-ntp yes
     sudo timedatectl set-timezone $time_zone
     timedatectl
@@ -175,14 +198,14 @@ function install_packages_for_ubuntu() {
     echo -e "Done!\n"
 
     echo "Installing prerequisite packages..."
-    sudo apt -y install apt-transport-https ca-certificates curl software-properties-common python3-venv
+    sudo apt -y install apt-transport-https ca-certificates curl software-properties-common python3-pip python3-venv
     echo -e "Done!\n"
 
     echo "Adding GPG key for the official docker repository..."
     curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
     echo ""
 
-    echo "Update the package database with the docker packages..."
+    echo "Updating the package database with the docker packages..."
     sudo apt -y update
     echo -e "Done!\n"
 
@@ -200,6 +223,43 @@ function install_packages_for_ubuntu() {
 
     echo "Adding ${USER} user in the docker group..." 
     sudo usermod -aG docker $USER
+    echo -e "Done!\n"
+}
+
+function install_jupyter_service() {
+    local file="${HOME}/.jupyter/jupyter_notebook_config.py"
+    local service="/etc/systemd/system/jupyter.service"
+    local ipaddr=$(hostname -I | awk '{print $1}')
+    local sha1=""
+
+    echo "Installing Jupyter Notebook service..."
+    sudo pip3 install notebook
+    echo -e "Done!\n"
+
+    echo "Generating SHA1 hash value..."
+    sha1=$(python3 ./jupyter/gen_sha1.py $JUPYTER_PASSWD)
+    echo $sha1
+    echo -e "Done!\n"
+
+    echo "Generating Jupyter Notebook config ..."
+    sudo jupyter notebook --generate -y
+    config_update $file "c.NotebookApp.password" "u'${sha1}'" ' = ' yes
+    config_update $file "c.NotebookApp.ip" "'${ipaddr}'" ' = ' yes
+    config_update $file "c.NotebookApp.notebook_dir" "'/'" ' = ' yes
+    if [[ $openssl = "yes" ]]; then
+        local dir="${HOME}/.ssh"
+        local key="${dir}/cert.key"
+        local cert="${dir}/cert.pem"
+        config_update $file "c.NotebookApp.certfile" "u'${cert}'" ' = ' yes
+        config_update $file "c.NotebookApp.keyfile" "u'${key}'" ' = ' yes
+    fi
+    echo -e "Done!\n"
+
+    echo "Adding Jupyter as System Service '${service}'..."
+    sudo cp ./jupyter/jupyter.service $service
+    sudo systemctl daemon-reload
+    sudo systemctl enable jupyter
+    sudo systemctl restart jupyter
     echo -e "Done!\n"
 }
 
@@ -292,11 +352,19 @@ function docker_start_services() {
 }
 
 function os_specific_for_ubuntu() {
-    ssh_config_update
-    ssh_key_generate
-    set_system_time_zone_for_ubuntu
-    create_virtual_memory
-    install_packages_for_ubuntu
+    #update_ssh_config
+    #create_ssh_key
+    #set_system_time_zone_for_ubuntu
+    #create_virtual_memory
+    #install_packages_for_ubuntu
+    if [[ $openssl = "yes" ]]; then
+        create_ssl_cert
+    fi
+
+    if [[ $jupyter = "yes" ]]; then
+        install_jupyter_service
+    fi
+    exit 0
 }
 
 get_os_version
