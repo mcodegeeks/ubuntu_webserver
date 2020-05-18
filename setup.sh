@@ -1,5 +1,5 @@
 #!/bin/bash
-
+OS_NAME="Unknown"
 DATA_VOLUME="data-volume"
 IMAGE_HOMEPAGE="mcodegeeks/homepage"
 CONTAINER_HOMEPAGE="homepage"
@@ -10,6 +10,7 @@ function show_help() {
     echo "  -h,  --help              Print this help."
     echo "  -b,  --build             Build images before starting containers."
     echo "  -r,  --rmi               Remove all images used by any service."
+    echo "  -o,  --os-specific       Setup os-specific dependencies."
     echo "  -v,  --volumes           Remove named volumes declared in the 'volumes'"
     echo "                           section of the Compose file and anonymous volumes"
     echo "                           attached to containers."
@@ -17,8 +18,9 @@ function show_help() {
 
 build=no
 rmi=no
+os_specific=no
 volumes=no
-optspec=":bhrv-:"
+optspec=":bhorv-:"
 while getopts "$optspec" optchar; do
     case "${optchar}" in
         -)
@@ -29,6 +31,8 @@ while getopts "$optspec" optchar; do
                     rmi=yes;;
                 volumes)
                     volumes=yes;;
+                os-specific)
+                    os_specific=yes;;
                 #loglevel)
                 #    val="${!OPTIND}"; OPTIND=$(( $OPTIND + 1 ))
                 #    echo "Parsing option: '--${OPTARG}', value: '${val}'" >&2;
@@ -49,7 +53,9 @@ while getopts "$optspec" optchar; do
             exit 2;;
         b)
             build=yes;;
-        r)  
+        o)
+            os_specific=yes;;
+        r)
             rmi=yes;;
         v)
             volumes=yes;;
@@ -62,6 +68,57 @@ while getopts "$optspec" optchar; do
             ;;
     esac
 done
+
+function get_os_version() {
+    local file="/etc/os-release"
+    if [[ -f $file ]]; then
+        OS_NAME=$(grep "^NAME=" $file | sed "s|^NAME=||g" | cut -d '"' -f2)
+    fi
+
+    if [[ $OS_NAME = "Ubuntu" ]]; then
+        echo $OS_NAME
+    else
+        echo "Only Ubuntu OS can be supported!"
+    fi
+
+    if [[ $os_specific = "yes" ]]; then
+        exit 0
+    fi
+}
+
+function config_append() {
+    local file=$1
+    local val=$2
+
+    if [[ ! -f $file ]]; then
+        touch $file
+    fi
+
+    echo "(+) ${val}"
+    echo "${val}" | tee -a $file > /dev/null
+}
+ 
+function config_update() {
+    local file=$1
+    local key=$2
+    local val=$3
+    local delim=$4
+    local line=""
+
+    if [[ ! -f $1 ]]; then
+        touch $1
+    fi
+
+    line=$(grep ".*${key}[[:space:]]*${delim}" $file)
+    if [[ -z $line ]]; then
+        echo "(+) ${key}${delim}${val}"
+        echo "${key}${delim}${val}" | tee -a $file > /dev/null
+    else
+        echo "(-) $line"
+        echo "(+) ${key}${delim}${val}"
+        sed -ie "s|.*${key}[[:space:]]*${delim}.*|${key}${delim}${val}|" $file
+    fi
+}
 
 function docker_package_exist() {
     rc=$(which docker)
@@ -150,6 +207,8 @@ function docker_start_services() {
     docker-compose up --no-build -d
     echo -e "Done!\n"
 }
+
+get_os_version
 
 docker_package_exist
 docker_stop_services
