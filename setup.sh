@@ -363,7 +363,6 @@ function os_specific_for_ubuntu() {
     if [[ $jupyter = "yes" ]]; then
         install_jupyter_service
     fi
-    exit 0
 }
 
 get_os_version
