@@ -4,7 +4,7 @@ FROM python:3
 WORKDIR /usr/src/app
 
 # Create a directory for data-volume
-RUN mkdir -p /data-volume
+RUN mkdir -p /data-volume/nginx
 
 # Copy application
 ADD ./app $WORKDIR

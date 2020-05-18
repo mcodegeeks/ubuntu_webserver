@@ -29,8 +29,6 @@ $ docker exec -it postgres /bin/bash
 $ psql -U postgres
 
 $ docker build -t mcodegeeks/homepage .
-$ docker run --name homepage -p 5000:5000 -v /var/run/homepage.sock:/var/run/homepage.sock -d --rm mcodegeeks/homepage
-
 $ docker run --name homepage -p 5000:5000 -v data-volume:/data-volume -d --rm mcodegeeks/homepage
 $ docker run --name homepage -p 5000:5000 -d mcodegeeks/homepage
 $ docker run --name homepage -p 5000:5000 -v data-volume:/data-volume -d --rm mcodegeeks/homepage gunicorn -b unix:/data-volume/nginx/gunicorn.sock -b :5000 wsgi:app
