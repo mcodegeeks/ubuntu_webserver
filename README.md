@@ -38,9 +38,9 @@ $ ./setup.sh --build
 ```
 
 ## Services
-* Web Application (GUnicorn): port:5000
-* Jupyter Notebook: port:8888
-* Nginx Webserver: port:80
+* Web Application (GUnicorn) port: 5000
+* Jupyter Notebook port: 8888
+* Nginx Webserver port: 80
   
 ```
 # Services Up
