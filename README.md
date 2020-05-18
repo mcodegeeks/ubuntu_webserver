@@ -52,7 +52,8 @@ $ docker-compose down
 
 ## Developing flask application
 ```
-cd app
+# Change working directory
+$ cd ./app
 
 # Create a virtual environment
 $ python3 -m venv venv 
