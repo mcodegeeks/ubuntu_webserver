@@ -1,5 +1,6 @@
 #!/bin/bash
 OS_NAME="Unknown"
+SWAP_FILE="/var/swapfile"
 DATA_VOLUME="data-volume"
 IMAGE_HOMEPAGE="mcodegeeks/homepage"
 CONTAINER_HOMEPAGE="homepage"
@@ -11,6 +12,7 @@ function show_help() {
     echo "  -b,  --build             Build images before starting containers."
     echo "  -r,  --rmi               Remove all images used by any service."
     echo "  -o,  --os-specific       Setup os-specific dependencies."
+    echo "       --time-zone         Set system time zone."
     echo "  -v,  --volumes           Remove named volumes declared in the 'volumes'"
     echo "                           section of the Compose file and anonymous volumes"
     echo "                           attached to containers."
@@ -19,6 +21,7 @@ function show_help() {
 build=no
 rmi=no
 os_specific=no
+time_zone="America/Toronto" # "UTC"
 volumes=no
 optspec=":bhorv-:"
 while getopts "$optspec" optchar; do
@@ -32,16 +35,13 @@ while getopts "$optspec" optchar; do
                 volumes)
                     volumes=yes;;
                 os-specific)
+                    # val="${!OPTIND}"; OPTIND=$(( $OPTIND + 1 ))
                     os_specific=yes;;
-                #loglevel)
-                #    val="${!OPTIND}"; OPTIND=$(( $OPTIND + 1 ))
-                #    echo "Parsing option: '--${OPTARG}', value: '${val}'" >&2;
-                #    ;;
-                #loglevel=*)
-                #    val=${OPTARG#*=}
-                #    opt=${OPTARG%=$val}
-                #    echo "Parsing option: '--${opt}', value: '${val}'" >&2
-                #    ;;
+                time-zone=*)
+                    val=${OPTARG#*=}
+                    opt=${OPTARG%=$val}
+                    time_zone=$val
+                    ;;
                 *)
                     echo "invalid option --${OPTARG}" >&2
                     show_help
@@ -69,33 +69,21 @@ while getopts "$optspec" optchar; do
     esac
 done
 
-function get_os_version() {
-    local file="/etc/os-release"
-    if [[ -f $file ]]; then
-        OS_NAME=$(grep "^NAME=" $file | sed "s|^NAME=||g" | cut -d '"' -f2)
-    fi
-
-    if [[ $OS_NAME = "Ubuntu" ]]; then
-        echo $OS_NAME
-    else
-        echo "Only Ubuntu OS can be supported!"
-    fi
-
-    if [[ $os_specific = "yes" ]]; then
-        exit 0
-    fi
-}
-
 function config_append() {
     local file=$1
     local val=$2
+    local sudo=""
+
+    if [[ ! -z $3 || $3 = 'yes' ]]; then
+        sudo="sudo"
+    fi
 
     if [[ ! -f $file ]]; then
-        touch $file
+        $sudo touch $file
     fi
 
     echo "(+) ${val}"
-    echo "${val}" | tee -a $file > /dev/null
+    echo "${val}" | $sudo tee -a $file > /dev/null
 }
  
 function config_update() {
@@ -103,21 +91,116 @@ function config_update() {
     local key=$2
     local val=$3
     local delim=$4
+    local sudo=""
     local line=""
 
+    if [[ ! -z $5 || $5 = 'yes' ]]; then
+        sudo="sudo"
+    fi
+
     if [[ ! -f $1 ]]; then
-        touch $1
+        $sudo touch $1
     fi
 
     line=$(grep ".*${key}[[:space:]]*${delim}" $file)
     if [[ -z $line ]]; then
         echo "(+) ${key}${delim}${val}"
-        echo "${key}${delim}${val}" | tee -a $file > /dev/null
+        echo "${key}${delim}${val}" | $sudo tee -a $file > /dev/null
     else
         echo "(-) $line"
         echo "(+) ${key}${delim}${val}"
-        sed -ie "s|.*${key}[[:space:]]*${delim}.*|${key}${delim}${val}|" $file
+        $sudo sed -ie "s|.*${key}[[:space:]]*${delim}.*|${key}${delim}${val}|" $file
     fi
+}
+
+function get_os_version() {
+    local file="/etc/os-release"
+    if [[ -f $file ]]; then
+        OS_NAME=$(grep "^NAME=" $file | sed "s|^NAME=||g" | cut -d '"' -f2)
+    fi
+}
+
+function ssh_config_update() {
+    local file="/etc/ssh/sshd_config"
+    echo "Updating SSH config '${file}'..."
+    config_update $file 'ClientAliveInterval' 60 ' ' yes
+    sudo service sshd restart
+    echo -e "Done!\n"
+}
+
+function ssh_key_generate() {
+    local dir="${HOME}/.ssh"
+    local file="${dir}/id_rsa"
+    mkdir -p $dir
+
+    if [ -f $file ]; then
+        echo -e "SSH key pair '${file}' already exists.\n"
+    else
+        echo "Generating SSH key pair '${file}'..."
+        ssh-keygen -t rsa -f $file -q -N ""
+        echo -e "Done!\n"
+    fi
+
+    cat "${file}.pub"
+    echo ""
+}
+
+function set_system_time_zone_for_ubuntu() {
+    echo "Set system time zone..."
+    timedatectl set-ntp yes
+    sudo timedatectl set-timezone $time_zone
+    timedatectl
+    echo -e "Done!\n"
+}
+
+function create_virtual_memory() {
+    echo "Creating virtual memory file '${SWAP_FILE}'..."
+    if [ -f $SWAP_FILE ]; then
+        echo "The file already exists."
+    else
+        sudo dd if=/dev/zero of=$SWAP_FILE bs=1M count=4096
+        sudo chmod 600 $SWAP_FILE
+        sudo mkswap $SWAP_FILE
+        sudo swapon $SWAP_FILE
+        echo "${SWAP_FILE}   swap    swap    defaults        0   0" | sudo tee -a /etc/fstab > /dev/null
+        sudo swapon -a
+        sudo swapon --show
+    fi
+    echo -e "Done!\n"
+}
+
+function install_packages_for_ubuntu() {
+    echo "Updating software repositories..."
+    sudo apt -y update
+    echo -e "Done!\n"
+
+    echo "Installing prerequisite packages..."
+    sudo apt -y install apt-transport-https ca-certificates curl software-properties-common python3-venv
+    echo -e "Done!\n"
+
+    echo "Adding GPG key for the official docker repository..."
+    curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
+    echo ""
+
+    echo "Update the package database with the docker packages..."
+    sudo apt -y update
+    echo -e "Done!\n"
+
+    echo "Installing from the docker repo instead of the default Ubuntu repo..."
+    sudo apt-cache policy docker-ce
+    echo -e "Done!\n"
+
+    echo "Installing docker ce..."
+    sudo apt -y install docker-ce
+    echo -e "Done!\n"
+
+    echo "Installing docker compose..."
+    sudo apt -y install docker-compose
+    echo -e "Done!\n"
+
+    echo "Adding ${USER} user in the docker group..." 
+    sudo usermod -aG docker $USER
+    echo -e "Done!\n"
 }
 
 function docker_package_exist() {
@@ -208,8 +291,22 @@ function docker_start_services() {
     echo -e "Done!\n"
 }
 
-get_os_version
+function os_specific_for_ubuntu() {
+    ssh_config_update
+    ssh_key_generate
+    set_system_time_zone_for_ubuntu
+    create_virtual_memory
+    install_packages_for_ubuntu
+}
 
+get_os_version
+if [[ $os_specific = "yes" ]]; then
+    if [[ $OS_NAME = "Ubuntu" ]]; then
+        os_specific_for_ubuntu
+    else
+        echo -e "Only Ubuntu OS can be supported!\n"
+    fi
+fi
 docker_package_exist
 docker_stop_services
 if [[ $rmi = "yes" ]]; then
