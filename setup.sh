@@ -373,10 +373,13 @@ function docker_start_services() {
     fi
     echo "Starting services..." 
     docker-compose up --no-build -d
-    rc=$(docker ps | grep jenkins)
-    if [[ -z $rc ]]; then
-        echo "Creating jenkins  ... done"
-        docker run --name jenkins -p 8080:8080 -p 50000:50000 -v /var/run/docker.sock:/var/run/docker.sock -u root -d $IMAGE_JENKINS:custom 
+    rc=$(docker images | grep "${IMAGE_JENKINS}" | grep custom)
+    if [[ ! -z $rc ]]; then
+        rc=$(docker ps | grep jenkins)
+        if [[ -z $rc ]]; then
+            echo "Creating jenkins  ... done"
+            docker run --name jenkins -p 8080:8080 -p 50000:50000 -v /var/run/docker.sock:/var/run/docker.sock -u root -d $IMAGE_JENKINS:custom 
+        fi
     fi
     echo -e "Done!\n"
 }
