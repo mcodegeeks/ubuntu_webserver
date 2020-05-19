@@ -314,13 +314,11 @@ function docker_pull_images() {
     echo -e "Done!\n"
 }
 
-function docker_remove_untaggeds() {
-    local rc=$(docker images | grep "<none>" | awk '{print $3}')
-    if [[ ! -z $rc ]]; then
-        echo "Removing untagged images..."
-        docker rmi -f $rc
-        echo -e "Done!\n"        
-    fi
+function docker_prune_unused() {
+    echo "Removing unused containers, networks, images and volumes..."
+    docker system prune -f
+    docker volume prune -f
+    echo -e "Done!\n"
 }
 
 function docker_remove_images() {
@@ -384,7 +382,7 @@ if [[ $rmi = "yes" ]]; then
     docker_remove_images
 fi
 docker_pull_images
-docker_remove_untaggeds
+docker_prune_unused
 if [[ $volumes = yes ]]; then
     docker_remove_volume
 fi
