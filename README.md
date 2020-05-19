@@ -1,5 +1,15 @@
 ## Ubuntu WebServer
-Practice Ubuntu Webserver on Amazon Lightsail Cloud
+Practice Dockerized Ubuntu Webserver on Amazon Lightsail Cloud
+* Ubuntu 18.04 LTS
+* Docker CE
+* Docker-Compose
+* Jupyter Notebook
+* Jenkins CI
+* Python Flask Microframework
+* GUnicorn Web Service Gateway Interface
+* Nginx Webserver
+
+## Getting Started
 ```
 $ git clone https://github.com/mcodegeeks/ubuntu_webserver.git
 $ cd ubuntu_webserver
