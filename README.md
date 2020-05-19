@@ -15,7 +15,8 @@ options:
   -r,  --rmi               Remove all images used by any service.
   -o,  --os-specific       Setup os-specific dependencies.
        --openssl           Create a self-signed certificate.
-       --jupyter           Insall Jupyter Notebook service.
+       --jenkins           Install Jenkins service.
+       --jupyter           Install Jupyter Notebook service.
        --time-zone         Set system time zone.
   -v,  --volumes           Remove named volumes declared in the 'volumes'
                            section of the Compose file and anonymous volumes
@@ -25,10 +26,10 @@ options:
 For example:
 ```
 # For production (Server)
-$ ./setup.sh -o --jupyter --time-zone="America/Toronto"
+$ ./setup.sh -o --jupyter --jenkins --time-zone="America/Toronto"
 
 # For development
-$ ./setup.sh
+$ ./setup.sh [--jenkinks]
 
 # For docker image refresh
 $ ./setup.sh --rmi
@@ -39,9 +40,10 @@ $ ./setup.sh --build
 
 ## Services
 * Web Application (GUnicorn) port: 5000
-* Jupyter Notebook port: 8888
 * Nginx Webserver port: 80
-  
+* Jenkins CI port: 8080
+* Jupyter Notebook port: 8888
+
 ```
 # Services Up
 $ docker-compose up --no-build -d
