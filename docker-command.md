@@ -2,6 +2,7 @@
 https://docs.docker.com/engine/reference/commandline/docker/
 
 ### Frequent Usages
+```
 $ docker pull ubuntu:18.04
 $ docker pull python:3
 $ docker pull nginx
@@ -38,8 +39,10 @@ $ docker build -t mcodegeeks/homepage .
 $ docker run --name homepage -p 5000:5000 -v data-volume:/data-volume -d --rm mcodegeeks/homepage
 $ docker run -it --rm mcodegeeks/homepage /bin/bash
 $ docker exec -it homepage /bin/bash
+```
 
 ### Commands
+```
 $ docker attach                                 # Attach local standard input, output, and error streams to a running container
 $ docker build                                  # Build an image from a Dockerfile
 $ docker builder                                # Manage builds
@@ -107,3 +110,4 @@ $ docker update                                 # Update configuration of one or
 $ docker version                                # Show the Docker version information
 $ docker volume                                 # Manage volumes
 $ docker wait                                   # Block until one or more containers stop, then print their exit codes
+```

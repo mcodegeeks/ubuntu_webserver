@@ -1,12 +1,18 @@
-# Create a virtual environment
+## Create a virtual environment
+```
 $ python3 -m venv venv
+```
 
-# Activate the virtual environment
+## Activate the virtual environment
+```
 $ source venv/bin/activate
+```
 
-# Install flask framework
-## Note: regardless of which version of Python you are using, when the virtual environment is activated, you should use the pip command (not pip3).
+## Install flask framework
+```
+* Note: regardless of which version of Python you are using, when the virtual environment is activated, you should use the pip command (not pip3).
 (venv) $ pip install flask
+```
 
 # Create a sample app (app.py)
 ```
@@ -32,7 +38,9 @@ if __name__ == "__main__":
 ```
 
 # Run the flask app
+```
 (venv) $ flask run 
+```
 
 # Navigate to http://localhost:5000/. You should see:
 ```
