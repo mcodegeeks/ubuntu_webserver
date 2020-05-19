@@ -83,7 +83,7 @@ $ source venv/bin/activate
 http://localhost:5000
 ```
 
-## Tip for SSH connection on Localmachine
+## Tip for SSH connection on Local
 - Generate SSH key pair or refresh known hostname and ip
 ```
 $ ssh-keygen -t rsa -q -N ""
