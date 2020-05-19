@@ -46,5 +46,3 @@ if __name__ == "__main__":
 ```
 {"hello":"world"}
 ```
-
-### Kill the server once done. Exit then remove the virtual environment as well.
