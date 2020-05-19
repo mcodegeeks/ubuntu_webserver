@@ -4,6 +4,7 @@ SWAP_FILE="/var/swapfile"
 JUPYTER_PASSWD=""
 DATA_VOLUME="data-volume"
 IMAGE_HOMEPAGE="mcodegeeks/homepage"
+IMAGE_JENKINS="jenkins/jenkins"
 CONTAINER_HOMEPAGE="homepage"
 function show_help() {
     echo "usage: $0 [OPTIONS]"
@@ -13,7 +14,8 @@ function show_help() {
     echo "  -r,  --rmi               Remove all images used by any service."
     echo "  -o,  --os-specific       Setup os-specific dependencies."
     echo "       --openssl           Create a self-signed certificate."
-    echo "       --jupyter           Insall Jupyter Notebook service."
+    echo "       --jenkins           Install Jenkins service."
+    echo "       --jupyter           Install Jupyter Notebook service."
     echo "       --time-zone         Set system time zone."
     echo "  -v,  --volumes           Remove named volumes declared in the 'volumes'"
     echo "                           section of the Compose file and anonymous volumes"
@@ -24,6 +26,7 @@ build=no
 rmi=no
 os_specific=no
 openssl=no
+jenkins=no
 jupyter=no
 time_zone="America/Toronto" # "UTC"
 volumes=no
@@ -46,6 +49,8 @@ while getopts "$optspec" optchar; do
                     os_specific=yes;;
                 openssl)
                     openssl=yes;;
+                jenkins)
+                    jenkins=yes;;
                 jupyter)
                     jupyter=yes;;
                 jupyter=*)
@@ -269,7 +274,7 @@ function install_jupyter_service() {
 }
 
 function docker_package_exist() {
-    rc=$(which docker)
+    local rc=$(which docker)
     if [[ -z $rc ]]; then
         echo "Please, install 'docker' package first..."
         exit 2
@@ -322,8 +327,24 @@ function docker_prune_unused() {
 }
 
 function docker_remove_images() {
+    local rc=""
     echo "Removing images..."
-    docker rmi -f $(docker images | grep "${IMAGE_HOMEPAGE}" | awk '{print $3}')
+    rc=$(docker images | grep "${IMAGE_HOMEPAGE}" | awk '{print $3}')
+    if [[ ! -z $rc ]]; then
+        docker rmi -f $rc
+    fi
+    if [[ $jenkins = "yes" ]]; then
+        rc=$(docker images | grep "${IMAGE_JENKINS}" | grep custom | awk '{print $3}')
+        if [[ ! -z $rc ]]; then
+            docker rmi -f $rc
+        fi
+    fi
+    echo -e "Done!\n"
+}
+
+function docker_build_jenkins() {
+    echo "Building jenkins image..."
+    docker build -t $IMAGE_JENKINS:custom ./jenkins
     echo -e "Done!\n"
 }
 
@@ -345,12 +366,18 @@ function docker_stop_services() {
 }
 
 function docker_start_services() {
+    local rc=""
     if [[ $build = yes ]]; then 
         docker_remove_images
         docker_build_images
     fi
     echo "Starting services..." 
     docker-compose up --no-build -d
+    rc=$(docker ps | grep jenkins)
+    if [[ -z $rc ]]; then
+        echo "Creating jenkins  ... done"
+        docker run --name jenkins -p 8080:8080 -p 50000:50000 -v /var/run/docker.sock:/var/run/docker.sock -u root -d $IMAGE_JENKINS:custom 
+    fi
     echo -e "Done!\n"
 }
 
@@ -382,6 +409,9 @@ if [[ $rmi = "yes" ]]; then
     docker_remove_images
 fi
 docker_pull_images
+if [[ $jenkins = "yes" ]]; then
+    docker_build_jenkins
+fi
 docker_prune_unused
 if [[ $volumes = yes ]]; then
     docker_remove_volume
