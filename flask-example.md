@@ -1,20 +1,20 @@
-## Create a virtual environment
+### Create a virtual environment
 ```
 $ python3 -m venv venv
 ```
 
-## Activate the virtual environment
+### Activate the virtual environment
 ```
 $ source venv/bin/activate
 ```
 
-## Install flask framework
+### Install flask framework
 ```
 * Note: regardless of which version of Python you are using, when the virtual environment is activated, you should use the pip command (not pip3).
 (venv) $ pip install flask
 ```
 
-# Create a sample app (app.py)
+### Create a sample app (app.py)
 ```
 from flask import Flask, jsonify
 
@@ -28,7 +28,7 @@ def create_app(script_info=None):
     return app
 ```
 
-# Creating the Web Server Gateway Interface (WSGI) Entry Point (wsgi.py)
+### Creating the Web Server Gateway Interface (WSGI) Entry Point (wsgi.py)
 ```
 from app import create_app
 
@@ -37,14 +37,14 @@ if __name__ == "__main__":
     app.run()
 ```
 
-# Run the flask app
+### Run the flask app
 ```
 (venv) $ flask run 
 ```
 
-# Navigate to http://localhost:5000/. You should see:
+### Navigate to http://localhost:5000/. You should see:
 ```
 {"hello":"world"}
 ```
 
-# Kill the server once done. Exit then remove the virtual environment as well.
+### Kill the server once done. Exit then remove the virtual environment as well.
