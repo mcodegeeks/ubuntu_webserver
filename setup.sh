@@ -387,7 +387,7 @@ function docker_remove_images() {
 
 function docker_build_jenkins() {
     local rc=$(docker images | grep "${IMAGE_JENKINS}" | grep custom | awk '{print $3}')
-    if [[ ! -z $rc ]]; then
+    if [[ -z $rc ]]; then
         echo "Building jenkins image..."
         docker build -t $IMAGE_JENKINS:custom ./jenkins
         echo -e "Done!\n"
