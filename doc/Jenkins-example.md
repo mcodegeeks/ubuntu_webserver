@@ -6,5 +6,5 @@
 docker rm -f homepage
 docker pull mcodegeeks/homepage
 docker system prune -f
-docker run --name homepage -p 5000:5000 -v data-volume:/data-volume -d --rm mcodegeeks/homepage
+docker run --name homepage -p 5000:5000 -v volume-homepage:/data/app -v volume-nginx:/data/nginx -v volume-postgres:/data/postgres -d --rm mcodegeeks/homepage
 ```
