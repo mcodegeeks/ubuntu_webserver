@@ -408,6 +408,12 @@ function docker_stop_services() {
     if [[ ! -z $rc ]]; then
         docker rm -f $CONTAINER_HOMEPAGE
     fi
+    if [[ $jenkins = "yes" ]]; then
+        rc=$(docker ps -a | grep jenkins)
+        if [[ ! -z $rc ]]; then
+             docker rm -f jenkins
+        fi
+    fi
     echo -e "Done!\n"
 }
 
