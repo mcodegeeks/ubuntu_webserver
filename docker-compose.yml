@@ -6,11 +6,15 @@ services:
     image: mcodegeeks/homepage
     container_name: homepage
     restart: unless-stopped
-    command: gunicorn -b unix:/data-volume/nginx/gunicorn.sock -b :5000 wsgi:app
+    command: gunicorn -b unix:/data/nginx/gunicorn.sock -b :5000 wsgi:app
     volumes:
-      - data-volume:/data-volume
+      - volume-homepage:/data/app
+      - volume-nginx:/data/nginx
+      - volume-postgres:/data/postgres
     ports:
       - "5000:5000"
+    depends_on:
+      - db
 
   web:
     image: nginx
@@ -18,10 +22,26 @@ services:
     container_name: nginx
     volumes:
       - ./nginx/nginx.conf:/etc/nginx/conf.d/default.conf:ro
-      - data-volume:/data-volume
+      - volume-nginx:/data/nginx
     ports:
       - "80:80"
+    depends_on:
+      - app
+
+  db:
+    image: postgres
+    restart: unless-stopped    
+    container_name: postgres
+    volumes:
+      - volume-postgres:/var/lib/postgresql/data/
+    environment:
+      - POSTGRES_USER=dbc
+      - POSTGRES_PASSWORD=dbc    
 
 volumes:
-  data-volume: 
+  volume-homepage: 
+    external: true  
+  volume-nginx: 
+    external: true
+  volume-postgres: 
     external: true

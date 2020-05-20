@@ -15,12 +15,12 @@ $ docker-compose up --no-build -d
 $ docker-compose stop
 
 $ docker run --name nginx -p 80:80 -v "$(pwd)/html":/usr/share/nginx/html:ro -d --rm nginx
-$ docker run --name nginx -p 80:80 -v "$(pwd)/nginx/nginx.conf":/etc/nginx/conf.d/default.conf:ro -v data-volume:/data-volume --rm nginx
+$ docker run --name nginx -p 80:80 -v "$(pwd)/nginx/nginx.conf":/etc/nginx/conf.d/default.conf:ro -v volume-nginx:/data/nginx --rm nginx
 $ docker exec -it nginx /bin/bash
 
 $ docker run --name apache -p 8080:80 -v /var/www/html:/usr/local/apache2/htdocs/ -dit --rm httpd
 
-$ docker run --name jenkins -p 8080:8080 -p 50000:50000 -v /var/run/docker.sock:/var/run/docker.sock -u root -d jenkins/jenkins:custom
+$ docker run --name jenkins -p 8080:8080 -p 50000:50000 -v volume-jenkins:/var/jenkins_home -v /var/run/docker.sock:/var/run/docker.sock -u root -d jenkins/jenkins:custom
 $ docker exec -it -u root jenkins /bin/bash
 $ docker exec jenkins cat /var/jenkins_home/secrets/initialAdminPassword
 $ docker logs jenkins
@@ -30,13 +30,13 @@ $ docker exec -it mysql mysql -u root -p
 $ docker exec -it mysql /bin/bash
 $ mysql -u root -p
 
-$ docker run --name postgres -p 5432:5432 -e POSTGRES_PASSWORD=dbc -v /var/www/db/postgres:/var/lib/postgresql/data -d --rm postgres
+$ docker run --name postgres -p 5432:5432 -e POSTGRES_PASSWORD=dbc -v volume-postgres/postgres:/var/lib/postgresql/data -d --rm postgres
 $ docker exec -it psql -U postgres
 $ docker exec -it postgres /bin/bash
 $ psql -U postgres
 
 $ docker build -t mcodegeeks/homepage .
-$ docker run --name homepage -p 5000:5000 -v data-volume:/data-volume -d --rm mcodegeeks/homepage
+$ docker run --name homepage -p 5000:5000 -v volume-homepage:/data/app -v volume-nginx:/data/nginx -v volume-postgres:/data/postgres -d --rm mcodegeeks/homepage
 $ docker run -it --rm mcodegeeks/homepage /bin/bash
 $ docker exec -it homepage /bin/bash
 ```

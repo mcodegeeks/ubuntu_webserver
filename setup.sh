@@ -2,7 +2,10 @@
 OS_NAME="Unknown"
 SWAP_FILE="/var/swapfile"
 JUPYTER_PASSWD=""
-DATA_VOLUME="data-volume"
+VOLUME_HOMEPAGE="volume-homepage"
+VOLUME_NGINX="volume-nginx"
+VOLUME_POSTGRES="volume-postgres"
+VOLUME_JENKINS="volume-jenkins"
 IMAGE_HOMEPAGE="mcodegeeks/homepage"
 IMAGE_JENKINS="jenkins/jenkins"
 CONTAINER_HOMEPAGE="homepage"
@@ -288,28 +291,68 @@ function docker_package_exist() {
 }
 
 function docker_volume_exist() {
-    local rc=$(docker volume ls | grep "$DATA_VOLUME")
+    local rc=$(docker volume ls | grep "$1")
     if [[ -z $rc ]]; then
         return 0
     fi
     return 1
 }
 
-function docker_remove_volume() {
-    docker_volume_exist
+function docker_remove_volumes() {
+    docker_volume_exist $VOLUME_HOMEPAGE
     if [[ $? -eq 1 ]]; then
-        echo "Removing data volume..."
-        docker volume rm -f $DATA_VOLUME
+        echo "Removing homepage data volume..."
+        docker volume rm -f $VOLUME_HOMEPAGE
         echo -e "Done!\n"
+    fi
+    docker_volume_exist $VOLUME_NGINX
+    if [[ $? -eq 1 ]]; then
+        echo "Removing nginx data volume..."
+        docker volume rm -f $VOLUME_NGINX
+        echo -e "Done!\n"
+    fi
+    docker_volume_exist $VOLUME_POSTGRES
+    if [[ $? -eq 1 ]]; then
+        echo "Removing postgres data volume..."
+        docker volume rm -f $VOLUME_POSTGRES
+        echo -e "Done!\n"
+    fi
+    if [[ $jenkins = "yes" ]]; then
+        docker_volume_exist $VOLUME_JENKINS
+        if [[ $? -eq 1 ]]; then
+            echo "Removing jenkins data volume..."
+            docker volume rm -f $VOLUME_JENKINS
+            echo -e "Done!\n"
+        fi
     fi
 }
 
-function docker_create_volume() {
-    docker_volume_exist
+function docker_create_volumes() {
+    docker_volume_exist $VOLUME_HOMEPAGE
     if [[ $? -eq 0 ]]; then
-        echo "Creating data volume..."
-        docker volume create $DATA_VOLUME
+        echo "Creating homepage data volume..."
+        docker volume create $VOLUME_HOMEPAGE
         echo -e "Done!\n"
+    fi
+    docker_volume_exist $VOLUME_NGINX
+    if [[ $? -eq 0 ]]; then
+        echo "Creating nginx data volume..."
+        docker volume create $VOLUME_NGINX
+        echo -e "Done!\n"
+    fi
+    docker_volume_exist $VOLUME_POSTGRES
+    if [[ $? -eq 0 ]]; then
+        echo "Creating postgres data volume..."
+        docker volume create $VOLUME_POSTGRES
+        echo -e "Done!\n"
+    fi
+    if [[ $jenkins = "yes" ]]; then
+        docker_volume_exist $VOLUME_JENKINS
+        if [[ $? -eq 0 ]]; then
+            echo "Creating jenkins data volume..."
+            docker volume create $VOLUME_JENKINS
+            echo -e "Done!\n"
+        fi
     fi
 }
 
@@ -343,9 +386,12 @@ function docker_remove_images() {
 }
 
 function docker_build_jenkins() {
-    echo "Building jenkins image..."
-    docker build -t $IMAGE_JENKINS:custom ./jenkins
-    echo -e "Done!\n"
+    local rc=$(docker images | grep "${IMAGE_JENKINS}" | grep custom | awk '{print $3}')
+    if [[ ! -z $rc ]]; then
+        echo "Building jenkins image..."
+        docker build -t $IMAGE_JENKINS:custom ./jenkins
+        echo -e "Done!\n"
+    fi
 }
 
 function docker_build_images() {
@@ -371,6 +417,9 @@ function docker_start_services() {
         docker_remove_images
         docker_build_images
     fi
+    if [[ $jenkins = "yes" ]]; then
+        docker_build_jenkins
+    fi
     echo "Starting services..." 
     docker-compose up --no-build -d
     rc=$(docker images | grep "${IMAGE_JENKINS}" | grep custom)
@@ -378,7 +427,7 @@ function docker_start_services() {
         rc=$(docker ps | grep jenkins)
         if [[ -z $rc ]]; then
             echo "Creating jenkins  ... done"
-            docker run --name jenkins -p 8080:8080 -p 50000:50000 -v /var/run/docker.sock:/var/run/docker.sock -u root -d $IMAGE_JENKINS:custom 
+            docker run --name jenkins -p 8080:8080 -p 50000:50000 -v volume-jenkins:/var/jenkins_home -v /var/run/docker.sock:/var/run/docker.sock -u root -d $IMAGE_JENKINS:custom 
         fi
     fi
     echo -e "Done!\n"
@@ -412,12 +461,9 @@ if [[ $rmi = "yes" ]]; then
     docker_remove_images
 fi
 docker_pull_images
-if [[ $jenkins = "yes" ]]; then
-    docker_build_jenkins
-fi
-docker_prune_unused
 if [[ $volumes = yes ]]; then
-    docker_remove_volume
+    docker_remove_volumes
 fi
-docker_create_volume
+docker_create_volumes
 docker_start_services
+docker_prune_unused
