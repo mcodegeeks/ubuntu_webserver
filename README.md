@@ -18,6 +18,9 @@ $ ./setup.sh [OPTIONS]
 
 ## User Input Required
 ```
+ubuntu@ip-172-26-6-31:~/ubuntu_webserver$ ./setup.sh -e
+...
+
 Creating postgres environment-specific file...
 Enter postgres user name: ""
 Enter postgres user password: ""
