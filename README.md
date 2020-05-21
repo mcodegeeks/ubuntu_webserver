@@ -22,6 +22,7 @@ usage: ./setup.sh [OPTIONS]
 options:
   -h,  --help              Print this help.
   -b,  --build             Build images before starting containers.
+  -e,  --env-specific      Renew environment-specific files.  
   -r,  --rmi               Remove all images used by any service.
   -o,  --os-specific       Setup os-specific dependencies.
        --openssl           Create a self-signed certificate.
