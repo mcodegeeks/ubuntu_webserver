@@ -462,37 +462,51 @@ function os_specific_for_ubuntu() {
 }
 
 function remove_env_files() {
+    if [[ -f $ENV_POSTGRES ]]; then
+        echo "Removing postgres environment-specific file..."
+        rm $ENV_POSTGRES
+        echo -e "Done!\n"
+    fi    
     if [[ -f $ENV_HOMEPAGE ]]; then
         echo "Removing homepage environment-specific file..."
         rm $ENV_HOMEPAGE
         echo -e "Done!\n"
     fi
-    if [[ -f $ENV_POSTGRES ]]; then
-        echo "Removing postgres environment-specific file..."
-        rm $ENV_POSTGRES
-        echo -e "Done!\n"
-    fi
+}
+
+function create_env_progres() {
+    local env_msgs=("user name"
+                    "user password"
+                    "database name")
+    local env_keys=("POSTGRES_USER"
+                    "POSTGRES_PASSWORD"
+                    "POSTGRES_DB")
+    touch $ENV_POSTGRES
+    for i in ${!env_keys[@]}; do
+        read -p "Enter postgres ${env_msgs[$i]}: " env_val
+        echo "${env_keys[$i]}=$env_val" >> $ENV_POSTGRES
+    done
 }
 
 function create_env_files() {
-    if [[ ! -f $ENV_HOMEPAGE ]]; then
-        echo "Creating homepage environment-specific file..."
-        touch $ENV_HOMEPAGE
-        echo -e "Done!\n"
-    fi
     if [[ ! -f $ENV_POSTGRES ]]; then
         echo "Creating postgres environment-specific file..."
-        touch $ENV_POSTGRES
+        create_env_progres
         echo -e "Done!\n"
     fi    
+    if [[ ! -f $ENV_HOMEPAGE ]]; then
+        :
+        #echo "Creating homepage environment-specific file..."
+        #touch $ENV_HOMEPAGE
+        #echo -e "Done!\n"
+    fi
+    #exit 0
 }
 
 if [[ $env_specific = 'yes' ]]; then
     remove_env_files
 fi
-#create_env_files
-#exit 0
-
+create_env_files
 get_os_version
 if [[ $os_specific = "yes" ]]; then
     if [[ $OS_NAME = "Ubuntu" ]]; then

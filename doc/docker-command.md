@@ -25,15 +25,14 @@ $ docker exec -it -u root jenkins /bin/bash
 $ docker exec jenkins cat /var/jenkins_home/secrets/initialAdminPassword
 $ docker logs jenkins
 
-$ docker run --name mysql -p 3306:3306 -e MYSQL_ROOT_PASSWORD=dbc -d --rm mysql:5.6
+$ docker run --name mysql -p 3306:3306 -e MYSQL_ROOT_PASSWORD='' -d --rm mysql:5.6
 $ docker exec -it mysql mysql -u root -p
 $ docker exec -it mysql /bin/bash
 $ mysql -u root -p
 
-$ docker run --name postgres -p 5432:5432 -e POSTGRES_PASSWORD=dbc -v volume-postgres/postgres:/var/lib/postgresql/data -d --rm postgres
-$ docker exec -it psql -U postgres
+$ docker run --name postgres -p 5432:5432 --env-file ./.env.db -v volume-postgres:/var/lib/postgresql/data -d --rm postgres
+$ docker exec -it postgres psql --username='' --dbname=''
 $ docker exec -it postgres /bin/bash
-$ psql -U postgres
 
 $ docker build -t mcodegeeks/homepage .
 $ docker run --name homepage -p 5000:5000 -v volume-homepage:/data/app -v volume-nginx:/data/nginx -v volume-postgres:/data/postgres -d --rm mcodegeeks/homepage
