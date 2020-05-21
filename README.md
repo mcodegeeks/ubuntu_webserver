@@ -16,6 +16,15 @@ $ cd ubuntu_webserver
 $ ./setup.sh [OPTIONS]
 ```
 
+## User Input Required
+```
+Creating postgres environment-specific file...
+Enter postgres user name: ""
+Enter postgres user password: ""
+Enter postgres database name: ""
+Done!
+```
+
 ## Setup Options
 ```
 usage: ./setup.sh [OPTIONS]
