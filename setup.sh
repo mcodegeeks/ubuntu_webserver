@@ -1,6 +1,8 @@
 #!/bin/bash
 OS_NAME="Unknown"
 SWAP_FILE="/var/swapfile"
+ENV_HOMEPAGE=".env"
+ENV_POSTGRES=".env.db"
 JUPYTER_PASSWD=""
 VOLUME_HOMEPAGE="volume-homepage"
 VOLUME_NGINX="volume-nginx"
@@ -14,6 +16,7 @@ function show_help() {
     echo "options:"
     echo "  -h,  --help              Print this help."
     echo "  -b,  --build             Build images before starting containers."
+    echo "  -e,  --env-specific      Renew environment-specific files."
     echo "  -r,  --rmi               Remove all images used by any service."
     echo "  -o,  --os-specific       Setup os-specific dependencies."
     echo "       --openssl           Create a self-signed certificate."
@@ -26,6 +29,7 @@ function show_help() {
 }
 
 build=no
+env_specific=no
 rmi=no
 os_specific=no
 openssl=no
@@ -33,7 +37,7 @@ jenkins=no
 jupyter=no
 time_zone="America/Toronto" # "UTC"
 volumes=no
-optspec=":bhorv-:"
+optspec=":behorv-:"
 while getopts "$optspec" optchar; do
     case "${optchar}" in
         -)
@@ -44,6 +48,8 @@ while getopts "$optspec" optchar; do
                     ;;
                 build)
                     build=yes;;
+                env-specific)
+                    env_specific=yes;;
                 rmi)
                     rmi=yes;;
                 volumes)
@@ -78,6 +84,8 @@ while getopts "$optspec" optchar; do
             ;;
         b)
             build=yes;;
+        e)
+            env_specific=yes;;
         o)
             os_specific=yes;;
         r)
@@ -452,6 +460,38 @@ function os_specific_for_ubuntu() {
         install_jupyter_service
     fi
 }
+
+function remove_env_files() {
+    if [[ -f $ENV_HOMEPAGE ]]; then
+        echo "Removing homepage environment-specific file..."
+        rm $ENV_HOMEPAGE
+        echo -e "Done!\n"
+    fi
+    if [[ -f $ENV_POSTGRES ]]; then
+        echo "Removing postgres environment-specific file..."
+        rm $ENV_POSTGRES
+        echo -e "Done!\n"
+    fi
+}
+
+function create_env_files() {
+    if [[ ! -f $ENV_HOMEPAGE ]]; then
+        echo "Creating homepage environment-specific file..."
+        touch $ENV_HOMEPAGE
+        echo -e "Done!\n"
+    fi
+    if [[ ! -f $ENV_POSTGRES ]]; then
+        echo "Creating postgres environment-specific file..."
+        touch $ENV_POSTGRES
+        echo -e "Done!\n"
+    fi    
+}
+
+if [[ $env_specific = 'yes' ]]; then
+    remove_env_files
+fi
+#create_env_files
+#exit 0
 
 get_os_version
 if [[ $os_specific = "yes" ]]; then
